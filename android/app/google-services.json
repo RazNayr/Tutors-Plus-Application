@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "323273145482",
+    "firebase_url": "https://tutorsplus-app.firebaseio.com",
+    "project_id": "tutorsplus-app",
+    "storage_bucket": "tutorsplus-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323273145482:android:22732114b85cf64d694173",
+        "android_client_info": {
+          "package_name": "app.tutorsplus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "323273145482-g70uco88qdldu9bm5c5nvt4gj6nuhfq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBezEsiCwRwSFr5sW4Ci50bc5ENZH1FCE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "323273145482-g70uco88qdldu9bm5c5nvt4gj6nuhfq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

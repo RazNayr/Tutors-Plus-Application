@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "323273145482-of4ogd43plpmm5o5f0prm47ruqm6rgf1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.tutorsplus",
+            "certificate_hash": "85d8d69c5690e0fbfd1c5b20727b69fd2e7f057b"
+          }
+        },
+        {
           "client_id": "323273145482-g70uco88qdldu9bm5c5nvt4gj6nuhfq8.apps.googleusercontent.com",
           "client_type": 3
         }

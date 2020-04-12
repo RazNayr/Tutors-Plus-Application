@@ -28,19 +28,6 @@ class _LoginState extends State<Login> {
     return loading ? Loading() : Scaffold(
       backgroundColor: Colors.white,
 
-      // appBar: AppBar(
-      //   backgroundColor: whitePlus,
-      //   elevation: 0.0,
-      //   title: Text('Sign in to Brew Crew'),
-      //   actions: <Widget>[
-      //     FlatButton.icon(
-      //       icon: Icon(Icons.person),
-      //       label: Text('Register'),
-      //       onPressed: () => widget.toggleView(),
-      //     ),
-      //   ],
-      // ),
-
       body: SingleChildScrollView(      
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
@@ -88,7 +75,7 @@ class _LoginState extends State<Login> {
                       width: double.infinity,
                       height: 40,
                       child: RaisedButton(
-                        color: purplePlus,
+                        color: orangePlus,
                         child: Text(
                           'Log in',
                           style: TextStyle(color: Colors.white),
@@ -108,6 +95,36 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     
+                    SizedBox(height: 20.0),
+                    
+                    Row(
+                      children: <Widget>[
+                        Icon(Icons.email),
+                        SizedBox(
+                          //width: double.infinity,
+                          height: 40,
+                          child: RaisedButton(
+                            color: Colors.red,
+
+                            child: Text(
+                              'Login with Google',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () async {
+                              setState(() => loading = true);
+                              dynamic result = await _auth.signInWithGoogle();
+                              if(result == null) {
+                                setState(() {
+                                  loading = false;
+                                  error = 'Could not login with Google';
+                                });
+                              }
+                            }
+                          ),
+                        ),
+                      ],
+                    ),
+
                     SizedBox(height: 20.0),
 
                     Row(

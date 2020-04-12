@@ -6,14 +6,35 @@ class DatabaseService {
   final String uid;
   DatabaseService({ this.uid });
 
-  // collection reference
+  final Firestore _db = Firestore.instance;
+  
+  // collection references
   final CollectionReference userCollection = Firestore.instance.collection('users');
 
-  Future<void> updateUserData(String sugars, String name, int strength) async {
+  //Update user data that is able to be modified
+  Future<void> updateUserData(Map<String, dynamic> userData) async {
     return await userCollection.document(uid).setData({
-      // 'sugars': sugars,
-      // 'name': name,
-      // 'strength': strength,
+      'user_fname': userData['fname'] as String,
+      'user_lname': userData['lname'] as String,
+      'user_dob': userData['date'] as DateTime,
+      'user_isTutor': userData['isTutor'] as bool,
+      'user_prefs': userData['prefs'] as List<String>,
+      'user_favourites': userData['favs'] as List<Map>,
+      'user_classes': userData['classes'] as List<Map>,
+    });
+  }
+
+  //Initialise primary user data when registered
+  Future<void> initialiseUserData(Map<String, dynamic> userData) async {
+    return await userCollection.document(uid).setData({
+      'user_fname': userData['fname'] as String,
+      'user_lname': userData['lname'] as String,
+      'user_dob': userData['dob'] as DateTime,
+      'user_gender': userData['gender'] as String,
+      'user_isTutor': false,
+      'user_prefs': null,
+      'user_favourites': null,
+      'user_classes': null,
     });
   }
 
@@ -29,15 +50,15 @@ class DatabaseService {
   //   }).toList();
   // }
 
-  // user data from snapshots
-  UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
-    return UserData(
-      uid: uid,
-      name: snapshot.data['name'],
-      sugars: snapshot.data['sugars'],
-      strength: snapshot.data['strength']
-    );
-  }
+  // // user data from snapshots
+  // UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
+  //   return UserData(
+  //     uid: uid,
+  //     name: snapshot.data['name'],
+  //     sugars: snapshot.data['sugars'],
+  //     strength: snapshot.data['strength']
+  //   );
+  // }
 
   // // get brews stream
   // Stream<List<Brew>> get brews {
@@ -45,9 +66,9 @@ class DatabaseService {
   //     .map(_brewListFromSnapshot);
   // }
 
-  // get user doc stream
-  Stream<UserData> get userData {
-    return userCollection.document(uid).snapshots().map(_userDataFromSnapshot);
-  }
+  // // get user doc stream
+  // Stream<UserData> get userData {
+  //   return userCollection.document(uid).snapshots().map(_userDataFromSnapshot);
+  // }
 
 }

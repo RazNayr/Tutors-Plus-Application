@@ -5,7 +5,6 @@ class User {
   final String uid;
   
   User({ this.uid });
-
 }
 
 class UserData {
@@ -15,10 +14,10 @@ class UserData {
   final String lname;
   final Timestamp dob;
   final bool isTutor;
-  final List<String> preferences;
+  final List<String> interests;
   final List<Map> favourites;
   final List<Map> lessons;
 
-  UserData(this.uid, this.fname, this.lname, this.dob, {this.isTutor, this.preferences, this.favourites, this.lessons});
+  UserData({this.uid, this.fname, this.lname, this.dob, this.isTutor, this.interests, this.favourites, this.lessons});
 
 }

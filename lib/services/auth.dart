@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/services/database.dart';
+
+// import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
 
@@ -27,7 +28,32 @@ class AuthService {
       return user;
     } catch (error) {
       print(error.toString());
-      return null;
+      
+      String errorMessage;
+
+      switch (error.code) {
+        case "ERROR_INVALID_EMAIL":
+          errorMessage = "Email address is invalid.";
+          break;
+        case "ERROR_WRONG_PASSWORD":
+          errorMessage = "Wrong password inputted.";
+          break;
+        case "ERROR_USER_NOT_FOUND":
+          errorMessage = "User with this email doesn't exist.";
+          break;
+        case "ERROR_USER_DISABLED":
+          errorMessage = "User with this email has been disabled.";
+          break;
+        case "ERROR_TOO_MANY_REQUESTS":
+          errorMessage = "Too many requests. Try again later.";
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          errorMessage = "Signing in with Email and Password is not enabled.";
+          break;
+        default:
+          errorMessage = "Could not login with those credentials";
+      }
+      return errorMessage;
     } 
   }
 
@@ -43,7 +69,19 @@ class AuthService {
       
     } catch (error) {
       print(error.toString());
-      return null;
+      String errorMessage;
+
+      switch (error.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+          errorMessage = "Email has already been registered.";
+          break;
+        case "ERROR_WEAK_PASSWORD":
+          errorMessage = "Password should be atleast 6 characters long.";
+          break;
+        default:
+          errorMessage = "Could not login with those credentials";
+      }
+      return errorMessage;
     } 
   }
 
@@ -57,35 +95,35 @@ class AuthService {
     }
   }
 
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-  final Firestore _db = Firestore.instance;
+  // final GoogleSignIn googleSignIn = GoogleSignIn();
+  // final Firestore _db = Firestore.instance;
 
 
-  Future <FirebaseUser> signInWithGoogle() async{
-    try {
-      GoogleSignInAccount googleUser = await googleSignIn.signIn();
-      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+  // Future <FirebaseUser> signInWithGoogle() async{
+  //   try {
+  //     GoogleSignInAccount googleUser = await googleSignIn.signIn();
+  //     GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      AuthResult result = await _auth.signInWithCredential(GoogleAuthProvider.getCredential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken
-      ));
+  //     AuthResult result = await _auth.signInWithCredential(GoogleAuthProvider.getCredential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken
+  //     ));
 
-      FirebaseUser user = result.user;
-      return user;
+  //     FirebaseUser user = result.user;
+  //     return user;
       
-    } catch (error) {
-      print(error.toString());
-      print("Error logging in to Google");
-      return null;
-    }
-  }
+  //   } catch (error) {
+  //     print(error.toString());
+  //     print("Error logging in to Google");
+  //     return null;
+  //   }
+  // }
 
-  void updateUserData(FirebaseUser user) async {
+  // void updateUserData(FirebaseUser user) async {
 
-  }
+  // }
 
-  void signOutGoogle(){
+  // void signOutGoogle(){
 
-  }
+  // }
 }

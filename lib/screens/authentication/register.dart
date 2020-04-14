@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:tutorsplus/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+
 //For DateTime form fields
 import 'package:intl/intl.dart';
 
@@ -213,10 +213,10 @@ class _RegisterState extends State<Register> {
                                 });
                                 dynamic result = await _auth.registerWithEmailAndPassword(email, password, userData);
 
-                                if(result == null) {
+                                if(result is String) {
                                   setState(() {
                                     loading = false;
-                                    error = "Failed to register, please try again!";
+                                    error = result;
                                   });
                                 }
                               } 

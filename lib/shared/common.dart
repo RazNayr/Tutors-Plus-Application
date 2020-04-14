@@ -19,3 +19,26 @@ const textInputDecoration = InputDecoration(
     borderSide: BorderSide(color: purplePlus, width: 2.0),
   ),
 );
+
+final kHintTextStyle = TextStyle(
+  color: greyPlus,
+  fontFamily: 'OpenSans',
+);
+
+final kLabelStyle = TextStyle(
+  color: greyPlus,
+  fontWeight: FontWeight.bold,
+  fontFamily: 'OpenSans',
+);
+
+final kBoxDecorationStyle = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.circular(10.0),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black12,
+      blurRadius: 6.0,
+      offset: Offset(0, 2),
+    ),
+  ],
+);

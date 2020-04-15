@@ -133,52 +133,7 @@ class _UserFavouritesState extends State<UserFavourites> {
   }
 }
 
-// class FavouriteTile extends StatelessWidget {
-
-//   final Map favourite;
-//   final Function removeFavourite;
-//   final List favouritesToRemove;
-
-//   FavouriteTile({ this.favourite, this.removeFavourite, this.favouritesToRemove });
-
-//   @override
-//   Widget build(BuildContext context) {
-
-//     final tuitionTitle = favourite['tuition_title'];
-//     final tuitionCategory = favourite['tuition_category'];
-//     final tuitionLevel = favourite['tuition_level'];
-//     final tuitionTutor = favourite['tuition_tutor'];
-//     final tuitionRef = favourite['tuition_ref'];
-
-//     return Padding(
-//       padding: const EdgeInsets.only(top: 8.0),
-//       child: Card(
-//         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-//         child: ListTile(
-//           leading: CircleAvatar(
-//             radius: 25.0,
-//             backgroundColor: Colors.white,
-//             backgroundImage: AssetImage('assets/book.png'),
-//           ),
-//           title: Text(tuitionTitle),
-//           subtitle: Text('Subject: '+ tuitionCategory +'\nLevel: '+ tuitionLevel),
-//           trailing: GestureDetector(
-//             child: Icon(
-//               !favouritesToRemove.contains(favourite) ? Icons.favorite : Icons.favorite_border, 
-//               color: Colors.red,
-//             ),
-//             onTap: (){
-//               removeFavourite(favourite);
-//             },
-//           ),
-//           isThreeLine: true
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class FavouriteTile extends StatefulWidget {
+class FavouriteTile extends StatelessWidget {
 
   final Map favourite;
   final Function toggleFavourite;
@@ -187,18 +142,12 @@ class FavouriteTile extends StatefulWidget {
   FavouriteTile({ this.favourite, this.toggleFavourite, this.favouritesToRemove });
 
   @override
-  _FavouriteTileState createState() => _FavouriteTileState();
-}
-
-class _FavouriteTileState extends State<FavouriteTile> {
-
-  @override
   Widget build(BuildContext context) {
-    final tuitionTitle = widget.favourite['tuition_title'];
-    final tuitionCategory = widget.favourite['tuition_category'];
-    final tuitionLevel = widget.favourite['tuition_level'];
-    final tuitionTutor = widget.favourite['tuition_tutor'];
-    final tuitionRef = widget.favourite['tuition_ref'];
+    final tuitionTitle = favourite['tuition_title'];
+    final tuitionCategory = favourite['tuition_category'];
+    final tuitionLevel = favourite['tuition_level'];
+    final tuitionTutor = favourite['tuition_tutor'];
+    final tuitionRef = favourite['tuition_ref'];
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
@@ -214,13 +163,11 @@ class _FavouriteTileState extends State<FavouriteTile> {
           subtitle: Text('Subject: '+ tuitionCategory +'\nLevel: '+ tuitionLevel),
           trailing: GestureDetector(
             child: Icon(
-              !widget.favouritesToRemove.contains(tuitionRef.path) ? Icons.favorite : Icons.favorite_border, 
+              !favouritesToRemove.contains(tuitionRef.path) ? Icons.favorite : Icons.favorite_border, 
               color: Colors.red,
             ),
             onTap: (){
-              setState(() {
-                widget.toggleFavourite(tuitionRef.path);
-              });
+              toggleFavourite(tuitionRef.path);
             },
           ),
           isThreeLine: true
@@ -229,3 +176,55 @@ class _FavouriteTileState extends State<FavouriteTile> {
     );
   }
 }
+
+// class FavouriteTile extends StatefulWidget {
+
+//   final Map favourite;
+//   final Function toggleFavourite;
+//   final List favouritesToRemove;
+
+//   FavouriteTile({ this.favourite, this.toggleFavourite, this.favouritesToRemove });
+
+//   @override
+//   _FavouriteTileState createState() => _FavouriteTileState();
+// }
+
+// class _FavouriteTileState extends State<FavouriteTile> {
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final tuitionTitle = widget.favourite['tuition_title'];
+//     final tuitionCategory = widget.favourite['tuition_category'];
+//     final tuitionLevel = widget.favourite['tuition_level'];
+//     final tuitionTutor = widget.favourite['tuition_tutor'];
+//     final tuitionRef = widget.favourite['tuition_ref'];
+
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 8.0),
+//       child: Card(
+//         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+//         child: ListTile(
+//           leading: CircleAvatar(
+//             radius: 25.0,
+//             backgroundColor: Colors.white,
+//             backgroundImage: AssetImage('assets/book.png'),
+//           ),
+//           title: Text(tuitionTitle),
+//           subtitle: Text('Subject: '+ tuitionCategory +'\nLevel: '+ tuitionLevel),
+//           trailing: GestureDetector(
+//             child: Icon(
+//               !widget.favouritesToRemove.contains(tuitionRef.path) ? Icons.favorite : Icons.favorite_border, 
+//               color: Colors.red,
+//             ),
+//             onTap: (){
+//               setState(() {
+//                 widget.toggleFavourite(tuitionRef.path);
+//               });
+//             },
+//           ),
+//           isThreeLine: true
+//         ),
+//       ),
+//     );
+//   }
+// }

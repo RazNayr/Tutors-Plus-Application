@@ -18,7 +18,8 @@ class _UserLessonsState extends State<UserLessons> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: blackPlus,
+        backgroundColor: amberPlus,
+        title: Text("Your Lessons"),
         elevation: 0.0,
       ),
 
@@ -28,12 +29,40 @@ class _UserLessonsState extends State<UserLessons> {
           if(snapshot.hasData){
             final lessons = snapshot.data.lessons ?? [];
 
-            return ListView.builder(
-              itemCount: lessons.length,
-              itemBuilder: (context, index) {
-                return LessonTile(lesson: lessons[index]);
-              }
-            );
+            if(lessons.length != 0){
+              return ListView.builder(
+                itemCount: lessons.length,
+                itemBuilder: (context, index) {
+                  return LessonTile(lesson: lessons[index]);
+                }
+              );
+            }else{
+              return Container(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.sentiment_dissatisfied, size: 70,),
+                    SizedBox(height: 20),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+                      child: Container(
+                        padding: EdgeInsets.all(20),
+                        child: Text("You have not enrolled in any tuition yet!",
+                          style: TextStyle(
+                            fontSize: 17, 
+                            fontWeight: FontWeight.bold, 
+                            fontFamily: "OpenSans"
+                          ),
+                        )
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            
 
           }else{
             return Loading();
@@ -52,11 +81,11 @@ class LessonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final lessonTitle = lesson['tuition_title'];
-    final lessonCategory = lesson['tuition_category'];
-    final lessonLevel = lesson['tuition_level'];
-    final lessonTutor = lesson['tuition_tutor'];
-    final lessonRef = lesson['tuition_ref'];
+    final tuitionTitle = lesson['tuition_title'];
+    final tuitionCategory = lesson['tuition_category'];
+    final tuitionLevel = lesson['tuition_level'];
+    final tuitionTutor = lesson['tuition_tutor'];
+    final tuitionRef = lesson['tuition_ref'];
 
 
     return Padding(
@@ -69,8 +98,8 @@ class LessonTile extends StatelessWidget {
             backgroundColor: Colors.white,
             backgroundImage: AssetImage('assets/book.png'),
           ),
-          title: Text(lessonTitle),
-          subtitle: Text('Subject: '+ lessonCategory +'\nLevel: '+ lessonLevel),
+          title: Text(tuitionTitle),
+          subtitle: Text('Subject: '+ tuitionCategory +'\nLevel: '+ tuitionLevel),
           trailing: Icon(Icons.info),
           isThreeLine: true
         ),

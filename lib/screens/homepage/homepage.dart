@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tutorsplus/screens/user-actions/view-favourites.dart';
 import 'package:tutorsplus/screens/user-actions/view-lessons.dart';
 import 'package:tutorsplus/services/auth.dart';
 import 'package:tutorsplus/shared/common.dart';
@@ -145,6 +146,9 @@ class _HomeDashboardState extends State<HomeDashboard> with SingleTickerProvider
                     "View Favourites",
                     style: TextStyle(color: greyPlus, fontSize: 20)),
                   leading: Icon(Icons.favorite),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserFavourites()));
+                  }
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.all(0),

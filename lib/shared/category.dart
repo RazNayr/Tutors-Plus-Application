@@ -9,7 +9,7 @@ class Category{
       'Business Studies',
       'Chemisty',
       'Chinese',
-      'Chinese Manderin',
+      'Chinese Mandarin',
       'Computer Studies',
       'IT',
       'Information Technology',

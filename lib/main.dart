@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tutorsplus/screens/wrapper.dart';
+import 'package:tutorsplus/screens/main-wrapper.dart';
 import 'package:tutorsplus/services/auth.dart';
 import 'package:tutorsplus/models/user.dart';
 
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return StreamProvider<User>.value(
       value: AuthService().user,
       child: MaterialApp(
-        home: Wrapper(),
+        home: MainWrapper(),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tutorsplus/models/user.dart';
 
@@ -10,17 +9,32 @@ class DatabaseService {
 
   // collection references
   final CollectionReference userCollection = Firestore.instance.collection('users');
+  final CollectionReference tutorCollection = Firestore.instance.collection('tutors');
 
   //Update user data that is able to be modified
-  Future<void> updateUserData(Map<String, dynamic> userData) async {
-    return await userCollection.document(uid).updateData({
+  // Future<void> updateUserData(Map<String, dynamic> userData) async {
+  //   return await userCollection.document(uid).updateData({
+  //     'user_fname': userData['fname'] as String,
+  //     'user_lname': userData['lname'] as String,
+  //     'user_dob': userData['date'] as DateTime,
+  //     'user_isTutor': userData['isTutor'] as bool,
+  //     'user_interests': userData['interests'] as List<String>,
+  //     'user_favourites': userData['favs'] as List<Map>,
+  //     'user_classes': userData['classes'] as List<Map>,
+  //   });
+  // }
+
+  //Initialise primary user data when registered
+  Future<void> initialiseUserData(Map<String, dynamic> userData) async {
+    return await userCollection.document(uid).setData({
       'user_fname': userData['fname'] as String,
       'user_lname': userData['lname'] as String,
-      'user_dob': userData['date'] as DateTime,
-      'user_isTutor': userData['isTutor'] as bool,
-      'user_interests': userData['interests'] as List<String>,
-      'user_favourites': userData['favs'] as List<Map>,
-      'user_classes': userData['classes'] as List<Map>,
+      'user_dob': userData['dob'] as DateTime,
+      'user_gender': userData['gender'] as String,
+      'user_isTutor': false,
+      'user_interests': new List<String>(),
+      'user_favourites': new List<Map>(),
+      'user_lessons': new List<Map>(),
     });
   }
 
@@ -55,17 +69,25 @@ class DatabaseService {
     });
   }
 
-  //Initialise primary user data when registered
-  Future<void> initialiseUserData(Map<String, dynamic> userData) async {
-    return await userCollection.document(uid).setData({
-      'user_fname': userData['fname'] as String,
-      'user_lname': userData['lname'] as String,
-      'user_dob': userData['dob'] as DateTime,
-      'user_gender': userData['gender'] as String,
-      'user_isTutor': false,
-      'user_interests': new List<String>(),
-      'user_favourites': new List<Map>(),
-      'user_lessons': new List<Map>(),
+  Future<void> initialiseTutor(Map<String, dynamic> tutorData) async {
+
+    await userCollection.document(uid).updateData({
+      'user_isTutor': true,
+    });
+
+    return await tutorCollection.document(uid).setData({
+      'tutor_fname': tutorData['fname'] as String,
+      'tutor_lname':  tutorData['lname'] as String,
+      'tutor_bio': null,
+      'tutor_dob': tutorData['dob'] as DateTime,
+      'tutor_isOnline': tutorData['isOnline'] as bool,
+      'tutor_isPremium': false,
+      'tutor_isWarranted': tutorData['isWarranted'] as bool,
+      'tutor_qualifications': tutorData['qualifications'] as List<String>,
+      'tutor_remarks': new List<Map>(),
+      'tutor_students': new List<DocumentReference>(),
+      'tutor_tuition': new List<Map>(),
+      'tutor_analytics': new Map()
     });
   }
 

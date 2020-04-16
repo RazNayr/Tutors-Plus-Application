@@ -84,8 +84,8 @@ class LessonTile extends StatelessWidget {
     final tuitionTitle = lesson['tuition_title'];
     final tuitionCategory = lesson['tuition_category'];
     final tuitionLevel = lesson['tuition_level'];
-    final tuitionTutor = lesson['tuition_tutor'];
-    final tuitionRef = lesson['tuition_ref'];
+    //final tuitionTutor = lesson['tuition_tutor'];
+    //final tuitionRef = lesson['tuition_ref'];
 
 
     return Padding(

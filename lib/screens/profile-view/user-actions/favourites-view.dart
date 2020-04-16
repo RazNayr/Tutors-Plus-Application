@@ -146,7 +146,7 @@ class FavouriteTile extends StatelessWidget {
     final tuitionTitle = favourite['tuition_title'];
     final tuitionCategory = favourite['tuition_category'];
     final tuitionLevel = favourite['tuition_level'];
-    final tuitionTutor = favourite['tuition_tutor'];
+    //final tuitionTutor = favourite['tuition_tutor'];
     final tuitionRef = favourite['tuition_ref'];
 
     return Padding(

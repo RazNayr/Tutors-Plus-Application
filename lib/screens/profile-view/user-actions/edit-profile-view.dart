@@ -5,10 +5,12 @@ import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/category.dart';
 import 'package:tutorsplus/shared/common.dart';
-import 'package:provider/provider.dart';
-import 'package:tutorsplus/shared/loading.dart';
 
 class EditUserProfile extends StatefulWidget {
+
+  final UserData userData;
+
+  EditUserProfile({this.userData});
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -30,7 +32,7 @@ class _EditProfileState extends State<EditUserProfile> {
   @override
   Widget build(BuildContext context) {
 
-    final user = Provider.of<User>(context);
+    final userData = widget.userData;
     Size size = MediaQuery.of(context).size;
     screenHeight = size.height;
     screenWidth = size.width;
@@ -41,50 +43,39 @@ class _EditProfileState extends State<EditUserProfile> {
         elevation: 0.0,
       ),
 
-      body: StreamBuilder<UserData>(
-        stream: DatabaseService(uid: user.uid).userData,
-        builder: (context, snapshot) {
-          if(snapshot.hasData){
-            UserData userData = snapshot.data;
-
-            return Container(
-              height: double.infinity,
-              width: double.infinity,
-              color: whitePlus,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child:FormBuilder(
-                key: _formBuilderKey,
-                autovalidate: false,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 30.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _buildTitleCont(),
-                      _buildImageCont(),
-                      SizedBox(height: 30),
-                      _buildFirstNameCont(userData.fname),
-                      SizedBox(height: 30),
-                      _buildLastNameCont(userData.lname),
-                      SizedBox(height: 30),
-                      _buildInterestsCont(_userPrefs ?? userData.interests),
-                      _buildSaveCont(userData.uid),
-                      SizedBox(height: 60),
-                  ]),
-                ),
-              )
-            );
-
-          }else{
-            return Loading();
-          }
-        }
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        color: whitePlus,
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child:FormBuilder(
+          key: _formBuilderKey,
+          autovalidate: false,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: 40.0,
+              vertical: 30.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildTitleCont(),
+                _buildImageCont(),
+                SizedBox(height: 30),
+                _buildFirstNameCont(userData.fname),
+                SizedBox(height: 30),
+                _buildLastNameCont(userData.lname),
+                SizedBox(height: 30),
+                _buildInterestsCont(_userPrefs ?? userData.interests),
+                _buildSaveCont(userData.uid),
+                SizedBox(height: 60),
+            ]),
+          ),
+        )
       ),
+        
     );
   }
 

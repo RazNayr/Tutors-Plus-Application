@@ -1,40 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/user.dart';
-import 'package:tutorsplus/services/database.dart';
-import 'package:tutorsplus/shared/loading.dart';
+import 'package:tutorsplus/screens/tutor-view/welcome-tutor.dart';
 
 import 'become-tutor.dart';
 import 'tutor-profile-view/tutor-profile.dart';
 
 class TutorWrapper extends StatefulWidget {
+
+  final UserData userData;
+
+  TutorWrapper({this.userData});
+
   @override
   _TutorWrapperState createState() => _TutorWrapperState();
 }
 
 class _TutorWrapperState extends State<TutorWrapper> {
 
+  bool showTutorWelcome = false;
+
+  void toggleTutorWelcome(){
+    setState(() => showTutorWelcome = !showTutorWelcome);
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    final user = Provider.of<User>(context);
-    
-    return StreamBuilder<Object>(
-      stream: DatabaseService(uid: user.uid).userData,
-      builder: (context, snapshot) {
-        if(snapshot.hasData){
-          UserData userData = snapshot.data;
-
-          if(userData.isTutor){
-            return TutorProfile();
-          }else{
-            return BecomeTutor();
-          }
-
-        }else{
-          return Loading();
-        }
+    if(widget.userData.isTutor && !showTutorWelcome){
+      return TutorProfile();
+    }else{
+      if(showTutorWelcome){
+        return WelcomeTutor(toggleWelcomeView: toggleTutorWelcome);
+      }else{
+        return BecomeTutor(toggleWelcomeView: toggleTutorWelcome);
       }
-    );
+    }
   }
 }

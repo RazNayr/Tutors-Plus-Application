@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tutorsplus/models/user.dart';
 
 class Messenger extends StatefulWidget {
+
+  final UserData userData;
+
+  Messenger({this.userData});
+
   @override
   _MessengerState createState() => _MessengerState();
 }

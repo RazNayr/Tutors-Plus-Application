@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tutorsplus/models/user.dart';
+import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/bottom-app-bar.dart';
 import 'package:tutorsplus/shared/common.dart';
+import 'package:tutorsplus/shared/loading.dart';
 
 import 'home-view/homepage.dart';
 import 'messenger-view/messenger.dart';
@@ -29,17 +33,17 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
     keepPage: true,
   );
 
-  Widget buildPageView() {
+  Widget buildPageView(userData) {
     return PageView(
       controller: pageController,
       onPageChanged: (index) {
         pageChanged(index);
       },
       children: <Widget>[
-        UserProfile(),
-        Home(),
-        Messenger(),
-        TutorWrapper(),
+        UserProfile(userData: userData),
+        Home(userData: userData),
+        Messenger(userData: userData),
+        TutorWrapper(userData: userData),
       ],
     );
   }
@@ -69,10 +73,22 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
 
+    final user = Provider.of<User>(context);
+
     return Scaffold(
       backgroundColor: whitePlus,
 
-      body: buildPageView(),
+      body: StreamBuilder<Object>(
+        stream: DatabaseService(uid: user.uid).userData,
+        builder: (context, snapshot) {
+          if(snapshot.hasData){
+            UserData userData = snapshot.data;
+            return buildPageView(userData);
+          }else{
+            return Loading();
+          }
+        }
+      ),
 
       bottomNavigationBar: FABBottomAppBar(
         currentIndex: bottomSelectedIndex,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tutorsplus/models/user.dart';
+import 'package:tutorsplus/models/tutor.dart';
 
 class DatabaseService {
 
@@ -10,6 +11,7 @@ class DatabaseService {
   // collection references
   final CollectionReference userCollection = Firestore.instance.collection('users');
   final CollectionReference tutorCollection = Firestore.instance.collection('tutors');
+  final CollectionReference tuitionCollection = Firestore.instance.collection('tuition');
 
   //Update user data that is able to be modified
   // Future<void> updateUserData(Map<String, dynamic> userData) async {
@@ -79,15 +81,63 @@ class DatabaseService {
       'tutor_fname': tutorData['fname'] as String,
       'tutor_lname':  tutorData['lname'] as String,
       'tutor_bio': null,
+      'tutor_rating': 0,
       'tutor_dob': tutorData['dob'] as DateTime,
       'tutor_isOnline': tutorData['isOnline'] as bool,
       'tutor_isPremium': false,
       'tutor_isWarranted': tutorData['isWarranted'] as bool,
       'tutor_qualifications': tutorData['qualifications'] as List<String>,
-      'tutor_remarks': new List<Map>(),
+      'tutor_reviews': new List<Map>(),
       'tutor_students': new List<DocumentReference>(),
       'tutor_tuition': new List<Map>(),
       'tutor_analytics': new Map()
+    });
+  }
+
+  Future<void> initialiseTuition(Map<String, dynamic> tuitionData) async {
+
+    List<Map<dynamic, dynamic>> _modifiedTutorTuitionList = List();
+    Map<dynamic, dynamic> _newTutorTuition = Map();
+    final DocumentReference tutordoc = tutorCollection.document(uid);
+
+    // Fetch tutor tuition from database
+    _modifiedTutorTuitionList = await tutordoc.get().then((onValue){
+      return onValue['tutor_tuition'].cast<Map>();
+    });
+
+    //Add needed Tuition details to new tuition map
+    _newTutorTuition['tuition_name'] = tuitionData['name'];
+    _newTutorTuition['tuition_description'] = tuitionData['description'];
+    _newTutorTuition['tuition_level'] = tuitionData['level'];
+    _newTutorTuition['tuition_category'] = tuitionData['category'];
+    _newTutorTuition['tuition_locality'] = tuitionData['locality'];
+    _newTutorTuition['tuition_isOnline'] = tuitionData['isOnline'];
+    _newTutorTuition['tuition_isPremium'] = tuitionData['isPremium'];
+    _newTutorTuition['tuition_geopoint'] = tuitionData['geopoint'];
+
+    // Add a new document with a generated id.
+    return await tuitionCollection.add({
+      'tuition_name': tuitionData['name'],
+      'tuition_description': tuitionData['description'],
+      'tuition_level': tuitionData['level'],
+      'tuition_category': tuitionData['category'],
+      'tuition_locality': tuitionData['locality'],
+      'tuition_isOnline': tuitionData['isOnline'],
+      'tuition_isPremium': tuitionData['isPremium'],
+      'tuition_tutor': tuitionData['tutor'],
+      'tuition_tutorRef': tutordoc,
+      'tuition_geopoint': tuitionData['geopoint'],
+    })
+    .then((tuitionDocRef) async {
+      _newTutorTuition['tuition_ref'] = tuitionDocRef;
+
+      // Add new tuition to list of tutor tuition
+      _modifiedTutorTuitionList.add(_newTutorTuition);
+
+      // Update tutor doc with modified list
+      await tutordoc.updateData({
+          'tutor_tuition': _modifiedTutorTuitionList
+      });
     });
   }
 
@@ -135,6 +185,34 @@ class DatabaseService {
       interests: snapshot.data['user_interests'].cast<String>(),
       favourites: snapshot.data['user_favourites'].cast<Map<dynamic, dynamic>>(),
       lessons: snapshot.data['user_lessons'].cast<Map<dynamic, dynamic>>(),
+    );
+  }
+
+  // get tutor doc stream
+  Stream<TutorData> get tutorData {
+    return tutorCollection.document(uid).snapshots()
+      .map(_tutorDataFromSnapshot);
+  }
+
+  // tutor data from snapshots
+  TutorData _tutorDataFromSnapshot(DocumentSnapshot snapshot) {
+    return TutorData(
+      uid: uid,
+      fname: snapshot.data['tutor_fname'],
+      lname: snapshot.data['tutor_lname'],
+      bio: snapshot.data['tutor_bio'],
+      dob: snapshot.data['tutor_dob'],
+      isOnline: snapshot.data['tutor_isOnline'],
+      isPremium: snapshot.data['tutor_isPremium'],
+      isWarranted: snapshot.data['tutor_isWarranted'],
+      rating: snapshot.data['tutor_rating'],
+
+      reviews: snapshot.data['tutor_reviews'].cast<Map<dynamic, dynamic>>(),
+      tuition: snapshot.data['tutor_tuition'].cast<Map<dynamic, dynamic>>(),
+      qualifications: snapshot.data['tutor_qualifications'].cast<String>(),
+      students: snapshot.data['tutor_students'].cast<DocumentReference>(),
+
+      analytics: snapshot.data['tutor_analytics'],
     );
   }
   

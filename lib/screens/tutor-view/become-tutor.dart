@@ -7,6 +7,11 @@ import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
 
 class BecomeTutor extends StatefulWidget {
+
+  final Function toggleWelcomeView;
+
+  BecomeTutor({this.toggleWelcomeView});
+
   @override
   _BecomeTutorState createState() => _BecomeTutorState();
 }
@@ -282,9 +287,9 @@ class _BecomeTutorState extends State<BecomeTutor> {
                             fontFamily: 'OpenSans',
                           ),
                         ),
-                        onPressed: () async {
+                        onPressed: () {
                           if(_formBuilderKey.currentState.saveAndValidate()){
-                            setState((){
+                            setState(() {
                               _loading = true;
                               bool isOnline = _formBuilderKey.currentState.value['isOnline_field'];
                               bool isWarranted = _formBuilderKey.currentState.value['isWarranted_field'];
@@ -300,10 +305,12 @@ class _BecomeTutorState extends State<BecomeTutor> {
                               _tutorData['isOnline'] = isOnline;
                               _tutorData['isWarranted'] = isWarranted;
                               _tutorData['qualifications'] = qualifications;
-                            });
 
-                            await db.initialiseTutor(_tutorData);
-                            Navigator.pop(this.context);
+                            });
+                            
+                            //Await isn't used here so that Welcome view can be immediately viewed before stream changes the view itself.
+                            db.initialiseTutor(_tutorData);
+                            widget.toggleWelcomeView();
                           }
                         }
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/services/auth.dart';
 import 'package:tutorsplus/shared/common.dart';
 
@@ -7,6 +8,11 @@ import 'user-actions/favourites-view.dart';
 import 'user-actions/lessons-view.dart';
 
 class UserProfile extends StatefulWidget {
+
+  final UserData userData;
+
+  UserProfile({this.userData});
+
   @override
   _UserProfileState createState() => _UserProfileState();
 }
@@ -17,6 +23,9 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+
+    final UserData userData = widget.userData;
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       child: Column(
@@ -42,7 +51,7 @@ class _UserProfileState extends State<UserProfile> {
               style: TextStyle(color: greyPlus, fontSize: 20)),
             leading: Icon(Icons.person_outline),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => EditUserProfile()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => EditUserProfile(userData: userData)));
             }
           ),
 
@@ -63,7 +72,7 @@ class _UserProfileState extends State<UserProfile> {
               style: TextStyle(color: greyPlus, fontSize: 20)),
             leading: Icon(Icons.format_list_bulleted),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserLessons()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UserLessons(userData: userData)));
             }
           ),
 
@@ -75,7 +84,7 @@ class _UserProfileState extends State<UserProfile> {
               style: TextStyle(color: greyPlus, fontSize: 20)),
             leading: Icon(Icons.favorite_border),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserFavourites()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UserFavourites(userData: userData)));
             }
           ),
 

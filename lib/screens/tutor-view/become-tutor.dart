@@ -172,20 +172,43 @@ class _BecomeTutorState extends State<BecomeTutor> {
                                 if(index != 0){
                                   return Column(
                                     children: <Widget>[
-                                      FormBuilderTextField( 
-                                        autofocus: false,
-                                        attribute: 'qualification_field'+qualNum,
-                                        maxLines: 1,
-                                        decoration: textInputDecoration.copyWith(
-                                          hintText: 'Qualification '+qualNum, 
-                                          suffixIcon: GestureDetector(
-                                            child:Icon(Icons.remove_circle),
-                                            onTap: (){
-                                              setState(() {
-                                                _numQualifications--;
-                                              });
-                                            },
-                                          )
+                                      Card(
+                                        child: Stack(
+                                          children: <Widget>[
+                                            FormBuilderTextField( 
+                                              autofocus: false,
+                                              attribute: 'qualification_field'+qualNum,
+                                              maxLines: 1,
+                                              decoration: InputDecoration(
+                                                hintText: 'Qualification '+qualNum,
+                                                border: InputBorder.none, 
+                                                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                              ),
+                                            ),
+
+                                            Positioned.fill(
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(horizontal:10),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    GestureDetector(
+                                                      child: Icon(Icons.remove_circle, color: Colors.grey,),
+                                                      onTap: (){
+                                                        setState(() {
+                                                          _numQualifications--;
+
+                                                          FocusScopeNode currentFocus = FocusScope.of(context);
+                                                          currentFocus.unfocus();
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ),
                                       GestureDetector(
@@ -201,12 +224,16 @@ class _BecomeTutorState extends State<BecomeTutor> {
                                 }else{
                                   return Column(
                                     children: <Widget>[
-                                      FormBuilderTextField( 
-                                        autofocus: false,
-                                        attribute: 'qualification_field'+qualNum,
-                                        maxLines: 1,
-                                        decoration: textInputDecoration.copyWith(
-                                          hintText: 'Qualification '+qualNum,
+                                      Card(
+                                        child: FormBuilderTextField( 
+                                          autofocus: false,
+                                          attribute: 'qualification_field'+qualNum,
+                                          maxLines: 1,
+                                          decoration: InputDecoration(
+                                            hintText: 'Qualification '+qualNum,
+                                            border: InputBorder.none, 
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                          ),
                                         ),
                                       ),
                                       GestureDetector(
@@ -225,33 +252,62 @@ class _BecomeTutorState extends State<BecomeTutor> {
                                 if(index != 0){
                                   return Column(
                                     children: <Widget>[
-                                      FormBuilderTextField( 
-                                        autofocus: false,
-                                        attribute: 'qualification_field'+qualNum,
-                                        maxLines: 1,
-                                        decoration: textInputDecoration.copyWith(
-                                          hintText: 'Qualification '+qualNum, 
-                                          suffixIcon: GestureDetector(
-                                            child:Icon(Icons.remove_circle),
-                                            onTap: (){
-                                              setState(() {
-                                                _numQualifications--;
-                                              });
-                                            },
-                                          )
+                                      Card(
+                                        child: Stack(
+                                          children: <Widget>[
+                                            FormBuilderTextField( 
+                                              autofocus: false,
+                                              attribute: 'qualification_field'+qualNum,
+                                              maxLines: 1,
+                                              decoration: InputDecoration(
+                                                hintText: 'Qualification '+qualNum,
+                                                border: InputBorder.none, 
+                                                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                              ),
+                                            ),
+
+                                            Positioned.fill(
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(horizontal:10),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    GestureDetector(
+                                                      child: Icon(Icons.remove_circle, color: Colors.grey,),
+                                                      onTap: (){
+                                                        setState(() {
+                                                          _numQualifications--;
+
+                                                          FocusScopeNode currentFocus = FocusScope.of(context);
+                                                          currentFocus.unfocus();
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(height:10)
+                                      SizedBox(height: 10,)
                                     ],
                                   );
                                 }else{
                                   return Column(
                                     children: <Widget>[
-                                      FormBuilderTextField( 
-                                        autofocus: false,
-                                        attribute: 'qualification_field'+qualNum,
-                                        maxLines: 1,
-                                        decoration: textInputDecoration.copyWith(hintText: 'Qualification '+qualNum),
+                                      Card(
+                                        child: FormBuilderTextField( 
+                                          autofocus: false,
+                                          attribute: 'qualification_field'+qualNum,
+                                          maxLines: 1,
+                                          decoration: InputDecoration(
+                                            hintText: 'Qualification '+qualNum,
+                                            border: InputBorder.none, 
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                          ),
+                                        ),
                                       ),
                                       SizedBox(height:10)
                                     ],

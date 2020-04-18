@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/tutor.dart';
 import 'package:tutorsplus/models/user.dart';
-import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/add-tuition.dart';
+import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/add-tuition-view.dart';
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
+
+import 'tutor-actions/edit-profile-view.dart';
 
 class TutorProfile extends StatefulWidget {
   @override
@@ -112,7 +114,7 @@ class _TutorProfileState extends State<TutorProfile> {
                     style: TextStyle(color: greyPlus, fontSize: 20)),
                   leading: Icon(Icons.person_outline),
                   onTap: () {
-                    
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditTutorProfile(tutorData: tutorData)));
                   }
                 ),
 

@@ -94,6 +94,15 @@ class DatabaseService {
     });
   }
 
+  Future<void> updateTutorProfileDetails(bool isOnline, bool isWarranted, String bio, List<String> qualifications) async {
+    return await tutorCollection.document(uid).updateData({
+      'tutor_isOnline': isOnline,
+      'tutor_isWarranted': isWarranted,
+      'tutor_bio': bio,
+      'tutor_qualifications': qualifications,
+    });
+  }
+
   Future<void> initialiseTuition(Map<String, dynamic> tuitionData) async {
 
     List<Map<dynamic, dynamic>> _modifiedTutorTuitionList = List();

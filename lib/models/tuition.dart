@@ -10,9 +10,10 @@ class Tuition{
   final String tutor;
   final String description;
   final String locality;
+  final String id;
   final DocumentReference tutorRef;
   final double latitude;
   final double longitude;
 
-  Tuition({this.isPremium, this.isOnline, this.category, this.level, this.name, this.tutor, this.tutorRef, this.latitude, this.longitude, this.description, this.locality});
+  Tuition({this.isPremium, this.isOnline, this.category, this.level, this.name, this.tutor, this.tutorRef, this.latitude, this.longitude, this.description, this.locality, this.id});
 }

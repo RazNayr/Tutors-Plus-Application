@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/user.dart';
+import 'package:tutorsplus/screens/search-view/search.dart';
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/bottom-app-bar.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
+import 'package:tutorsplus/shared/transition-animations.dart';
 
 import 'home-view/homepage.dart';
 import 'messenger-view/messenger.dart';
@@ -22,11 +24,9 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
   int bottomSelectedIndex = 1;
 
   //When tapping the Floating Action Button
-  // void _selectedFab(int index) {
-  //   setState(() {
-  //     //bottomSelectedIndex = index;
-  //   });
-  // }
+  void _selectedFab() {
+    Navigator.push(context, ScaleToRoute(page: Search()));
+  }
 
   PageController pageController = PageController(
     initialPage: 1,
@@ -112,7 +112,7 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
         tooltip: 'Search Tuition',
         elevation: 2.0,
         backgroundColor: amberPlus,
-        onPressed: () {},
+        onPressed: () {_selectedFab();},
       ),
     );
   }

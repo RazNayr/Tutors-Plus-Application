@@ -6,7 +6,9 @@ import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/a
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
+import 'package:tutorsplus/shared/transition-animations.dart';
 
+import 'tutor-actions/analytics-view.dart';
 import 'tutor-actions/edit-profile-view.dart';
 
 class TutorProfile extends StatefulWidget {
@@ -65,6 +67,70 @@ class _TutorProfileState extends State<TutorProfile> {
     );
   }
 
+  void _alertDialogPremiumFeature(BuildContext context) {
+    var alert = AlertDialog(
+      title: Text("Oops!\nYou found a premium feature",
+        style: TextStyle(color: greyPlus, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: whitePlus,
+      content: RichText(
+        text: TextSpan(
+          style: TextStyle(fontSize: 16, color: greyPlus, fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(text: "Upgrade to "),
+            TextSpan(text: "Premium now", style: TextStyle(color: purplePlus)),
+            TextSpan(text: "!"),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          onPressed: () => Navigator.pop(context), 
+          child: Text("No",
+            style: TextStyle(
+              fontSize: 16,
+              color: greyPlus,
+              fontWeight: FontWeight.bold
+            ),
+          )
+        ),
+        FlatButton(
+          onPressed: null, 
+          child: Text("Yes",
+            style: TextStyle(
+              fontSize: 16,
+              color: purplePlus,
+              fontWeight: FontWeight.bold
+            ),
+          )
+        ),
+      ],
+      //shape: CircleBorder(),
+      elevation: 20.0,
+    );
+
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) => alert,
+      barrierDismissible: true,
+    );
+  }
+
+  Widget _toggleNewTuitionIcon(tutordata){
+
+    final tutorData = tutordata;
+
+    if(tutorData.tuition.length >= 3){
+      if(tutorData.isPremium){
+        return null;
+      }else{
+        return Icon(Icons.lock);
+      }
+    }else{
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -114,7 +180,7 @@ class _TutorProfileState extends State<TutorProfile> {
                     style: TextStyle(color: greyPlus, fontSize: 20)),
                   leading: Icon(Icons.person_outline),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditTutorProfile(tutorData: tutorData)));
+                    Navigator.push(context, SlideToRoute(page: EditTutorProfile(tutorData: tutorData),type: "right"));
                   }
                 ),
 
@@ -137,11 +203,16 @@ class _TutorProfileState extends State<TutorProfile> {
                     "Add Tuition",
                     style: TextStyle(color: greyPlus, fontSize: 20)),
                   leading: Icon(Icons.library_add),
+                  trailing: _toggleNewTuitionIcon(tutorData),
                   onTap: () {
                     if(tutorData.tuition.length >= 3){
-                      _alertDialogMaxTuition(context);
+                      if(tutorData.isPremium){
+                        Navigator.push(context, SlideToRoute(page: AddTuition(tutorData: tutorData),type: "right"));
+                      }else{
+                        _alertDialogMaxTuition(context);
+                      }
                     }else{
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AddTuition(tutorData: tutorData)));
+                      Navigator.push(context, SlideToRoute(page: AddTuition(tutorData: tutorData),type: "right"));
                     }
                   }
                 ),
@@ -164,9 +235,14 @@ class _TutorProfileState extends State<TutorProfile> {
                   title: Text(
                     "View Analytics",
                     style: TextStyle(color: greyPlus, fontSize: 20)),
-                  leading: Icon(Icons.lock_outline),
+                  leading: Icon(Icons.insert_chart),
+                  trailing: tutorData.isPremium? null: Icon(Icons.lock),
                   onTap: () {
-                    
+                    if(tutorData.isPremium){
+                      Navigator.push(context, SlideToRoute(page: Analytics(tutorData: tutorData),type: "right"));
+                    }else{
+                      _alertDialogPremiumFeature(context);
+                    }
                   }
                 ),
 

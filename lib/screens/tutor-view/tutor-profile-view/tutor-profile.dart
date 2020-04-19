@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/tutor.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/add-tuition-view.dart';
+import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/tuition-view.dart';
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
@@ -225,7 +226,7 @@ class _TutorProfileState extends State<TutorProfile> {
                     style: TextStyle(color: greyPlus, fontSize: 20)),
                   leading: Icon(Icons.format_list_bulleted),
                   onTap: () {
-                    
+                    Navigator.push(context, SlideToRoute(page: TutorTuition(tutorData: tutorData),type: "right"));
                   }
                 ),
 

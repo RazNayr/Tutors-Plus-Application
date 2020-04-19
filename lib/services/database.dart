@@ -150,6 +150,27 @@ class DatabaseService {
     });
   }
 
+  Future<void> removeTuition(DocumentReference tuitionDoc, int tuitionIndex) async {
+
+    List<Map<dynamic, dynamic>> _modifiedTutorTuitionList = List();
+    final DocumentReference tutordoc = tutorCollection.document(uid);
+
+    // Fetch tutor tuition from database
+    _modifiedTutorTuitionList = await tutordoc.get().then((onValue){
+      return onValue['tutor_tuition'].cast<Map>();
+    });
+
+    // Remove tuition at specified index in Tutor's list of Tuitions
+    _modifiedTutorTuitionList.removeAt(tuitionIndex);
+
+    // Update tutor doc with modified list
+    await tutordoc.updateData({
+        'tutor_tuition': _modifiedTutorTuitionList
+    });
+
+    return await tuitionCollection.document(tuitionDoc.documentID).delete();
+  }
+
   // // brew list from snapshot
   // List<Brew> _brewListFromSnapshot(QuerySnapshot snapshot) {
   //   return snapshot.documents.map((doc){

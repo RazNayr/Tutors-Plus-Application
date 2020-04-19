@@ -109,6 +109,7 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
+        heroTag: 'tag1',
         tooltip: 'Search Tuition',
         elevation: 2.0,
         backgroundColor: amberPlus,

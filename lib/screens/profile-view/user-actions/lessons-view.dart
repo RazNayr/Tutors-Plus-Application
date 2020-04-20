@@ -82,7 +82,7 @@ class LessonTile extends StatelessWidget {
   LessonTile({ this.lesson });
 
   
-  void _alertDialogTuitionInfo(BuildContext context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium, tuitionIsOnline) {
+  void _alertDialogTuitionInfo(BuildContext context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium) {
 
     var alert = AlertDialog(
       title: Text(tuitionName,
@@ -104,7 +104,6 @@ class LessonTile extends StatelessWidget {
         ),
       ),
       actions: <Widget>[
-        Icon( tuitionIsOnline? Icons.headset_mic : Icons.headset_off),
         IconButton(
           icon: Icon(Icons.person_pin), 
           onPressed: () => Navigator.pop(context)
@@ -128,9 +127,8 @@ class LessonTile extends StatelessWidget {
     final tuitionLevel = lesson['tuition_level'];
     final tuitionTutor = lesson['tuition_tutor'];
     final tuitionDescription = lesson['tuition_description'];
-    //final tuitionRef = lesson['tuition_ref'];
+    //final tutorRef = lesson['tuition_tutorRef'];
     final tuitionIsPremium = lesson['tuition_isPremium'];
-    final tuitionIsOnline = lesson['tuition_isOnline'];
 
 
     return Padding(
@@ -148,7 +146,7 @@ class LessonTile extends StatelessWidget {
           trailing: GestureDetector(
             child: Icon(Icons.info,),
             onTap: (){
-              _alertDialogTuitionInfo(context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium, tuitionIsOnline);
+              _alertDialogTuitionInfo(context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium);
             },
           ),
           isThreeLine: true

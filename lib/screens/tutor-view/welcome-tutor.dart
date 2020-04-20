@@ -8,8 +8,7 @@ class WelcomeTutor extends StatelessWidget {
 
   WelcomeTutor({this.toggleWelcomeView});
 
-  //final loadingColours = [orangePlus, amberPlus];
-  final loadingColoursPremium = [purplePlus, Colors.deepPurple[200]];
+  final loadingColours = [orangePlus, amberPlus];
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,7 @@ class WelcomeTutor extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               return DecoratedBox(
                 decoration: BoxDecoration(
-                  color: loadingColoursPremium[index%2]
+                  color: loadingColours[index%2]
                 ),
               );
             },
@@ -48,7 +47,7 @@ class WelcomeTutor extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              color: purplePlus,
+              color: orangePlus,
               child: Text(
                 'Continue',
                 style: TextStyle(

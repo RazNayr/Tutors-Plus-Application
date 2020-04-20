@@ -23,6 +23,7 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
+  PanelController _pc = PanelController();
   ScrollController _scrollController = ScrollController();
   final GlobalKey<FormBuilderState> _filterKey = GlobalKey<FormBuilderState>();
 
@@ -39,7 +40,7 @@ class _SearchState extends State<Search> {
   var _hideUI = false;
   var _sliderVisibility = false;
   var _radiusButtonVisibility = true;
-  static var _localityFormInputVisibility = false;  
+  static var _localityFormInputVisibility = false;
 
   Map<String, Tuition> tuitions = <String, Tuition>{};
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -48,13 +49,43 @@ class _SearchState extends State<Search> {
   List<Tuition> premiumTuitionsOnMap = List<Tuition>();
   List<Tuition> freemiumTuitionsOnMap = List<Tuition>();
   List<Tuition> sortedTuitionsOnMap = List<Tuition>();
-  Map<String, dynamic> _filter = <String, dynamic>{};  
+  Map<String, dynamic> _filter = <String, dynamic>{};
   Map<String, dynamic> _filterOnTuitions = {
     'level': null,
     'category': null,
     'locality': null
   };
   bool _noneAvailable = false;
+
+  //took ages to make, want to be 100% sure we dont need before i delete it and its usage
+
+  // final displacementMap = {
+  //     // 14.0: 0.01440645109,
+  //     // 13.5: 0.01962084775,
+  //     // 13.0: 0.02680461575,
+  //     // 12.5: 0.03870212761,
+  //     // 12.25: 0.04536923163,
+  //     // 12.0: 0.05585054236,
+  //     // 11.75: 0.06396836297,
+  //     // 11.5: 0.07543250084,
+  //     // 11.3: 0.08662210988,
+  //     // 11.2: 0.09334109119,
+  //     // 11.0: 0.1110293887,
+  //     // 10.8: 0.1298647664,
+  //     // 10.6: 0.146582659,
+  //     // 10.55: 0.1555412069,
+  //     // 10.53: 0.149611895,
+  //     // 10.49: 0.1617661812,
+  //     // 10.42: 0.1657328531,
+  //     // 10.36: 0.1713408965,
+  //     // 10.30: 0.1793559496,
+  //     // 10.24: 0.1868963114,
+  //     // 10.17: 0.1932176468,
+  //     // 10.10: 0.206095408,
+  //     // 10.04: 0.2170894017,
+  //     // 9.95: 0.2219217388,
+  //     // 9.8: 0.2368946661,
+  //   };
 
   Set<Circle> getCircleFromRadius() => Set<Circle>.from([
         Circle(
@@ -63,7 +94,7 @@ class _SearchState extends State<Search> {
           radius: _range * 1000,
           fillColor: Colors.blue.withOpacity(0.2),
           strokeColor: whitePlus.withOpacity(0.8),
-        )
+        ),
       ]);
 
   @override
@@ -72,7 +103,6 @@ class _SearchState extends State<Search> {
       body: _slidingPanel(context),
     );
 
-    
     // return Scaffold(
     //   body: _slidingPanel(context),
     // );
@@ -106,28 +136,28 @@ class _SearchState extends State<Search> {
                   docs.documents[i].data['tuition_geopoint'].longitude)
               .toString();
           Tuition newTuition = new Tuition(
-              // tuitionId,
-              // docs.documents[i].data['tuition_title'],
-              // docs.documents[i].data['tutor_name'],
-              // docs.documents[i].data['tuition_category'],
-              // docs.documents[i].data['tuition_level'],
-              // docs.documents[i].data['isPremium'],
-              // docs.documents[i].data['locality'],
-              // docs.documents[i].data['tuition_geopoint'].longitude,
-              // docs.documents[i].data['tuition_geopoint'].latitude);
-              id: tuitionId,
-              isPremium: docs.documents[i].data['tuition_isPremium'],
-              isOnline: docs.documents[i].data['tuition_isOnline'],
-              category : docs.documents[i].data['tuition_category'],
-              level : docs.documents[i].data['tuition_level'],
-              name : docs.documents[i].data['tuition_name'],
-              tutor : docs.documents[i].data['tuition_tutor'],
-              description : docs.documents[i].data['description'],
-              locality : docs.documents[i].data['tuition_locality'],
-              tutorRef : docs.documents[i].data['tuition_tutorRef'],              
-              latitude : docs.documents[i].data['tuition_geopoint'].latitude,
-              longitude : docs.documents[i].data['tuition_geopoint'].longitude,
-              );
+            // tuitionId,
+            // docs.documents[i].data['tuition_title'],
+            // docs.documents[i].data['tutor_name'],
+            // docs.documents[i].data['tuition_category'],
+            // docs.documents[i].data['tuition_level'],
+            // docs.documents[i].data['isPremium'],
+            // docs.documents[i].data['locality'],
+            // docs.documents[i].data['tuition_geopoint'].longitude,
+            // docs.documents[i].data['tuition_geopoint'].latitude);
+            id: tuitionId,
+            isPremium: docs.documents[i].data['tuition_isPremium'],
+            isOnline: docs.documents[i].data['tuition_isOnline'],
+            category: docs.documents[i].data['tuition_category'],
+            level: docs.documents[i].data['tuition_level'],
+            name: docs.documents[i].data['tuition_name'],
+            tutor: docs.documents[i].data['tuition_tutor'],
+            description: docs.documents[i].data['description'],
+            locality: docs.documents[i].data['tuition_locality'],
+            tutorRef: docs.documents[i].data['tuition_tutorRef'],
+            latitude: docs.documents[i].data['tuition_geopoint'].latitude,
+            longitude: docs.documents[i].data['tuition_geopoint'].longitude,
+          );
           tuitions[tuitionId] = newTuition;
           _addNewMarker(newTuition);
         }
@@ -141,8 +171,7 @@ class _SearchState extends State<Search> {
     final Marker marker = Marker(
       markerId: markerId,
       position: LatLng(tuition.latitude, tuition.longitude),
-      infoWindow:
-          InfoWindow(title: tuition.name, snippet: tuition.tutor),
+      infoWindow: InfoWindow(title: tuition.name, snippet: tuition.tutor),
       icon: !tuition.isPremium
           ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)
           : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
@@ -187,7 +216,9 @@ class _SearchState extends State<Search> {
     GoogleMapController controller = await _controller.future;
     double _focusZoom = 17.0;
     controller.animateCamera(CameraUpdate.newLatLngZoom(
-        LatLng(tuition.latitude - 0.001540481573, tuition.longitude), _focusZoom));
+        LatLng(tuition.latitude, tuition.longitude),
+        //LatLng(tuition.latitude - 0.001540481573, tuition.longitude),
+        _focusZoom));
   }
 
   Set<Marker> updateRadiusFilter() {
@@ -218,11 +249,11 @@ class _SearchState extends State<Search> {
       24: 9.95,
       25: 9.8,
     };
-    
+
     Map<MarkerId, Marker> markersToDisplay = <MarkerId, Marker>{};
 
     final withinRange = Map.from(mapDistances)
-      ..removeWhere((k, v) => v > _range);   
+      ..removeWhere((k, v) => v > _range);
 
     List<dynamic> toRemove = [];
     toRemove.clear();
@@ -256,7 +287,7 @@ class _SearchState extends State<Search> {
     });
 
     withinRange.removeWhere((id, tuition) => toRemove.contains(id));
-    print('after filtering:' + withinRange.length.toString());
+    //print('after filtering:' + withinRange.length.toString());
 
     if (withinRange.length == 0) {
       setState(() {
@@ -304,40 +335,12 @@ class _SearchState extends State<Search> {
   }
 
   Future rangeZoom() async {
-    final displacementMap = {
-      14.0: 0.01440645109,
-      13.5: 0.01962084775,
-      13.0: 0.02680461575,
-      12.5: 0.03870212761,
-      12.25: 0.04536923163,
-      12.0: 0.05585054236,
-      11.75: 0.06396836297,
-      11.5: 0.07543250084,
-      11.3: 0.08662210988,
-      11.2: 0.09334109119,
-      11.0: 0.1110293887,
-      10.8: 0.1298647664,
-      10.6: 0.146582659,
-      10.55: 0.1555412069,
-      10.53: 0.149611895,
-      10.49: 0.1617661812,
-      10.42: 0.1657328531,
-      10.36: 0.1713408965,
-      10.30: 0.1793559496,
-      10.24: 0.1868963114,
-      10.17: 0.1932176468,
-      10.10: 0.206095408,
-      10.04: 0.2170894017,
-      9.95: 0.2219217388,
-      9.8: 0.2368946661,
-    };
-
     GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newLatLngZoom(
-        //LatLng(currentLocation.latitude, currentLocation.longitude), _zoom));
-        LatLng(currentLocation.latitude - displacementMap[_zoom],
-            currentLocation.longitude),
-        _zoom));
+        LatLng(currentLocation.latitude, currentLocation.longitude), _zoom));
+    // LatLng(currentLocation.latitude - displacementMap[_zoom],
+    //     currentLocation.longitude),
+    // _zoom));
   }
 
   void _onMapTypeButtonPressed() {
@@ -346,6 +349,22 @@ class _SearchState extends State<Search> {
           ? MapType.satellite
           : MapType.normal;
     });
+  }
+
+  void _currentLocationZoomAndAngle() async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+          bearing: 0,
+          target: LatLng(currentLocation.latitude, currentLocation.longitude),
+          //_radiusButtonVisibility
+          // ? LatLng(currentLocation.latitude-displacementMap[_zoom], currentLocation.longitude)
+          // : LatLng(currentLocation.latitude-displacementMap[14.0], currentLocation.longitude),
+          // zoom: _radiusButtonVisibility
+          // ? _zoom
+          // : 14.0
+          zoom: 14.0),
+    ));
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -383,6 +402,12 @@ class _SearchState extends State<Search> {
             onCameraIdle: _onCameraIdle,
             myLocationEnabled: true,
             tiltGesturesEnabled: false,
+            //to be on top center
+            padding: EdgeInsets.only(
+              // right: MediaQuery.of(context).size.width / 2.4,
+              bottom: MediaQuery.of(context).size.height / 1,
+              top: MediaQuery.of(context).size.height / 2,
+            ),
             circles: _radiusButtonVisibility ? getCircleFromRadius() : null,
           )
         : Center(
@@ -411,8 +436,13 @@ class _SearchState extends State<Search> {
                 borderRadius: BorderRadius.circular(10),
                 color: whitePlus,
               )),
+              tooltip: FlutterSliderTooltip(
+                  textStyle: TextStyle(fontSize: 17, color: blackPlus),
+                  boxStyle: FlutterSliderTooltipBox(
+                      decoration:
+                          BoxDecoration(color: whitePlus.withOpacity(0.7)))),
               axis: Axis.vertical,
-              values: [25],
+              values: [_range],
               min: 1,
               max: 25,
               onDragging: (handlerIndex, lowerValue, upperValue) {
@@ -438,12 +468,13 @@ class _SearchState extends State<Search> {
       setState(() {
         _radiusButtonVisibility = true;
         _range = 6;
-        _zoom = 9.8;
+        _zoom = 12.0;
       });
     } else {
       setState(() {
         _radiusButtonVisibility = false;
-        _range = 25;
+        _range = 60;
+        _zoom = 9.8;
       });
     }
 
@@ -475,7 +506,7 @@ class _SearchState extends State<Search> {
                 Container(
                   width: MediaQuery.of(context).size.width / 1.2,
                   height: MediaQuery.of(context).size.height / 11,
-                  padding: const EdgeInsets.all(27),
+                  padding: const EdgeInsets.all(20),
                   decoration: new BoxDecoration(
                       color: blackPlus,
                       shape: BoxShape.rectangle,
@@ -496,8 +527,9 @@ class _SearchState extends State<Search> {
         : listView;
   }
 
-  Widget _slidingPanel(BuildContext context) {    
+  Widget _slidingPanel(BuildContext context) {
     return SlidingUpPanel(
+      controller: _pc,
       panel: Column(
         children: <Widget>[
           Container(
@@ -585,7 +617,7 @@ class _SearchState extends State<Search> {
 
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height / 1.97,
+      height: MediaQuery.of(context).size.height / 2,
       color: whitePlus,
       child: Column(
         children: <Widget>[
@@ -593,6 +625,37 @@ class _SearchState extends State<Search> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              Container(
+                alignment: Alignment.centerRight,
+                child: FloatingActionButton(
+                  child: const Icon(
+                    Icons.cached,
+                    size: 20.0,
+                    color: greyPlus,
+                  ),
+                  onPressed: () {
+                    _filterKey.currentState.reset();
+                    setState(() => _localityFormInputVisibility = false);
+                    if (_filterKey.currentState.saveAndValidate()) {
+                      _filter = _filterKey.currentState.value;
+                      _pc.close();
+                      rangeZoom();
+                      _applyFilter(_filter);
+                    }
+                  },
+                  backgroundColor: whitePlus,
+                  elevation: 0,
+                  heroTag: 'hero2',
+                ),
+              ),
+              Container(
+                alignment: Alignment.center,
+                child: Text('Filters',
+                    style: TextStyle(
+                      color: blackPlus,
+                      fontSize: 20,
+                    )),
+              ),
               Container(
                 alignment: Alignment.centerLeft,
                 child: FloatingActionButton(
@@ -607,38 +670,11 @@ class _SearchState extends State<Search> {
                     onPressed: () {
                       if (_filterKey.currentState.saveAndValidate()) {
                         _filter = _filterKey.currentState.value;
+                        _pc.close();
+                        rangeZoom();
                         _applyFilter(_filter);
                       }
                     }),
-              ),
-              Container(
-                alignment: Alignment.center,
-                child: Text('Filters',
-                    style: TextStyle(
-                      color: blackPlus,
-                      fontSize: 20,
-                    )),
-              ),
-              Container(
-                alignment: Alignment.centerRight,
-                child: FloatingActionButton(
-                  child: const Icon(
-                    Icons.cached,
-                    size: 20.0,
-                    color: greyPlus,
-                  ),
-                  onPressed: () {
-                    _filterKey.currentState.reset();
-                    setState(() => _localityFormInputVisibility = false);
-                    if (_filterKey.currentState.saveAndValidate()) {
-                      _filter = _filterKey.currentState.value;
-                      _applyFilter(_filter);
-                    }
-                  },
-                  backgroundColor: whitePlus,
-                  elevation: 0,
-                  heroTag: 'hero2',
-                ),
               ),
             ],
           ),
@@ -685,7 +721,7 @@ class _SearchState extends State<Search> {
                                           left: 20,
                                           right: 20,
                                           //top: 5,
-                                          bottom: 25))),
+                                          bottom: 20))),
                               FormBuilderDropdown(
                                 attribute: 'level',
                                 //initialValue: 'Any',
@@ -767,6 +803,33 @@ class _SearchState extends State<Search> {
     );
   }
 
+
+  //disable container attempt
+
+  // bool touch = true;
+
+  // void _onTap(){
+  //   print('tap');
+  //   setState(() {
+  //     touch=false;
+  //   });
+  // }
+
+
+  // void _onScaleStart(ScaleStartDetails details){
+  //   print('drag start');
+  //   setState(() {
+  //     touch=true;
+  //   });
+  // }
+
+  // void _onScaleEnd(ScaleEndDetails details){
+  //   print('drag end');
+  //   setState(() {
+  //     touch=false;
+  //   });
+  // }
+
   Widget _selectionView(BuildContext context) {
     return Stack(
       children: <Widget>[
@@ -794,6 +857,26 @@ class _SearchState extends State<Search> {
                 child: const Icon(Icons.map, size: 18.0),
               ),
             )),
+        Positioned(
+            //map button change
+            top: MediaQuery.of(context).size.height / 20,
+            left: MediaQuery.of(context).size.width / 2.22,
+            right: MediaQuery.of(context).size.width / 2.22,
+            child: Opacity(
+              opacity: 0.8,
+              child: FloatingActionButton(
+                onPressed: _currentLocationZoomAndAngle,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                backgroundColor: blackPlus,
+                elevation: 20,
+                heroTag: 'hero4',
+                mini: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(18.0),
+                    side: BorderSide(color: amberPlus)),
+                child: const Icon(Icons.gps_fixed, size: 18.0),
+              ),
+            )),
         _radiusButtonVisibility
             ? Positioned(
                 //radius vertical slider switch
@@ -806,7 +889,7 @@ class _SearchState extends State<Search> {
                     materialTapTargetSize: MaterialTapTargetSize.padded,
                     backgroundColor: blackPlus,
                     elevation: 20,
-                    heroTag: 'hero4',
+                    heroTag: 'hero5',
                     mini: true,
                     shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(18.0),
@@ -831,9 +914,18 @@ class _SearchState extends State<Search> {
             child: Opacity(
               opacity: _hideUI ? 0.25 : 1,
               child: _tuitionListView(context),
+              // child: GestureDetector(
+              //   onTap: _onTap,
+              //   onScaleStart: _onScaleStart,
+              //   onScaleEnd: _onScaleEnd,
+              //   child: IgnorePointer(
+                  // ignoring: touch ? true : false,
+                  // child: _tuitionListView(context),
+              // ),
+              // ),
             )),
       ],
+    
     );
   }
 }
- 

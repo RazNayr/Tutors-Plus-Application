@@ -71,6 +71,90 @@ class DatabaseService {
     });
   }
 
+  Future<void> enrollInTuition(DocumentReference tutorRef, Map newTuition) async {
+
+    List<Map<dynamic, dynamic>> _modifiedUserLessonsList = List();
+    List<DocumentReference> _modifiedStudentsList = List();
+    final DocumentReference userDoc = userCollection.document(uid);
+    final DocumentReference tutorDoc = tutorCollection.document(tutorRef.documentID);
+
+    // Fetch user lessons from database
+    _modifiedUserLessonsList = await userDoc.get().then((onValue){
+      return onValue['user_lessons'].cast<Map>();
+    });
+
+    // Fetch tutor students from database
+    _modifiedStudentsList = await tutorDoc.get().then((onValue){
+      return onValue['tutor_students'].cast<DocumentReference>();
+    });
+    
+    _modifiedUserLessonsList.add(newTuition);
+    _modifiedStudentsList.add(userDoc);
+
+    // Update tutor docuemnt with modified students list
+    await tutorDoc.updateData({
+        'tutor_students': _modifiedStudentsList
+    });
+
+    // Update database with modified list
+    return await userDoc.updateData({
+        'user_lessons': _modifiedUserLessonsList
+    });
+  }
+
+  bool isPastStudent(TutorData tutorData){
+    final DocumentReference userDoc = userCollection.document(uid);
+    bool isPastStudent = false;
+    
+    tutorData.students.forEach((studentRef){
+      if(studentRef.path == userDoc.path){
+        isPastStudent = true;
+      }
+    });
+
+    return isPastStudent;
+  }
+
+  Future<void> addReview(TutorData tutorData, String review, double rating) async {
+
+    final DocumentReference userDoc = userCollection.document(uid);
+    final DocumentReference tutorDoc = tutorCollection.document(tutorData.uid);
+    String userName;
+    List<Map> modifiedReviewsList = new List();
+    Map userReview = new Map();
+    int totalReviews;
+    int totalTutorRatings = 0;
+    int newTutorRating;
+
+    userName = await userDoc.get().then((onValue){
+      return onValue['user_fname']+" "+onValue['user_lname'];
+    });
+
+    modifiedReviewsList = await tutorDoc.get().then((onValue){
+      return onValue['tutor_reviews'].cast<Map>();
+    });
+
+    userReview['student_name'] = userName;
+    userReview['student_rating'] = rating.toInt();
+    userReview['student_review'] = review;
+
+    modifiedReviewsList.add(userReview);
+
+    modifiedReviewsList.forEach((review){
+      totalTutorRatings += review['student_rating'].toInt();
+    });
+
+    totalReviews = modifiedReviewsList.length;
+    newTutorRating = totalTutorRatings~/totalReviews;
+
+    // Update database with modified list
+    return await tutorDoc.updateData({
+        'tutor_rating': newTutorRating,
+        'tutor_reviews': modifiedReviewsList,
+    });
+
+  }
+
   Future<void> initialiseTutor(Map<String, dynamic> tutorData) async {
 
     await userCollection.document(uid).updateData({
@@ -100,6 +184,27 @@ class DatabaseService {
       'tutor_isWarranted': isWarranted,
       'tutor_bio': bio,
       'tutor_qualifications': qualifications,
+    });
+  }
+
+  Future<void> upgradeToPremium() async{
+
+    List<DocumentReference> tuitionDocRefList = List();
+    final DocumentReference tutordoc = tutorCollection.document(uid);
+
+    // Fetch tutor tuition from database
+    tuitionDocRefList = await tutordoc.get().then((onValue){
+      return onValue['tutor_tuition'].map((item) => item['tuition_ref']).toList().cast<DocumentReference>();
+    });
+
+    tuitionDocRefList.forEach((tuitionRef) {
+      tuitionCollection.document(tuitionRef.documentID).updateData({
+        'tuition_isPremium': true,
+      });
+    });
+
+    return await tutorCollection.document(uid).updateData({
+      'tutor_isPremium': true,
     });
   }
 
@@ -221,6 +326,12 @@ class DatabaseService {
   // get tutor doc stream
   Stream<TutorData> get tutorData {
     return tutorCollection.document(uid).snapshots()
+      .map(_tutorDataFromSnapshot);
+  }
+
+  // get selected tutor doc stream
+  Stream<TutorData> selectedTutorData(DocumentReference tutorRef) {
+    return tutorCollection.document(tutorRef.documentID).snapshots()
       .map(_tutorDataFromSnapshot);
   }
 

@@ -27,11 +27,13 @@ dependencies:
   provider: ^4.0.4
   
   flutter_spinkit: ^4.1.2+1
-  #flutter_tagging: ^2.2.0+3
   flutter_tags: "^0.4.8"
   flutter_form_builder: ^3.8.2
   flutter_syntax_view: ^1.0.0
   animated_splash: ^1.0.0
+  confetti: ^0.4.0
+  font_awesome_flutter: ^8.8.1
+  smooth_star_rating: 1.0.4+2
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
@@ -68,6 +70,8 @@ flutter:
     - assets/logos/facebook.jpg
     - assets/logos/google.jpg
     - assets/map_style.txt
+    - assets/sample_chat.png
+    - assets/marker.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

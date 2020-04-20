@@ -16,9 +16,8 @@ class TutorTuition extends StatefulWidget {
 
 class _TutorTuitionState extends State<TutorTuition> {
 
-  void _removeTuition({tuitionRef, tuitionIndex, context}) {
+  void _removeTuition({tuitionRef, tuitionIndex}) {
     setState(() async{
-      Navigator.pop(context);
       await DatabaseService(uid: widget.tutorData.uid).removeTuition(tuitionRef,tuitionIndex);
     });
   }
@@ -47,7 +46,7 @@ class _TutorTuitionState extends State<TutorTuition> {
               body: ListView.builder(
                 itemCount: tuitions.length,
                 itemBuilder: (context, index) {
-                  return TuitionTile(tuition: tuitions[index], tuitionIndex: index, removeTuition: _removeTuition,);
+                  return TuitionTile(tuition: tuitions[index], tuitionIndex: index, removeTuition: _removeTuition, isPremium: tutorData.isPremium);
                 }
               ),
             );
@@ -56,7 +55,7 @@ class _TutorTuitionState extends State<TutorTuition> {
              return Scaffold(
               appBar: AppBar(
                 backgroundColor: amberPlus,
-                title: Text("Your Lessons"),
+                title: Text("Your Tuition"),
                 centerTitle: true,
                 elevation: 0.0,
               ),
@@ -99,12 +98,11 @@ class TuitionTile extends StatelessWidget {
 
   final Map tuition;
   final int tuitionIndex;
+  final bool isPremium;
   final Function removeTuition;
-  TuitionTile({ this.tuition, this.tuitionIndex, this.removeTuition });
+  TuitionTile({ this.tuition, this.tuitionIndex, this.removeTuition, this.isPremium });
 
   void _alertDialogTuitionInfo({BuildContext context, tuitionName, tuitionDescription, tuitionIsPremium, tuitionIsOnline}) {
-
-    final tuitionRef = tuition['tuition_ref'];
 
     var alert = AlertDialog(
       title: Text(tuitionName,
@@ -134,8 +132,8 @@ class TuitionTile extends StatelessWidget {
             color: Colors.red,),
           ),
           onTap: () {
-            removeTuition(tuitionRef: tuitionRef, tuitionIndex: tuitionIndex, context: context);
-            //_alertDialogConfirmDeletion(context: context);
+            Navigator.pop(context);
+            _alertDialogConfirmDeletion(context: context);
           },
         ),
       ],
@@ -187,6 +185,7 @@ class TuitionTile extends StatelessWidget {
           ),
           onTap: (){
             Navigator.pop(context);
+            removeTuition(tuitionRef: tuitionRef, tuitionIndex: tuitionIndex);
           },
         ),
       ],
@@ -207,7 +206,6 @@ class TuitionTile extends StatelessWidget {
     final tuitionCategory = tuition['tuition_category'];
     final tuitionLevel = tuition['tuition_level'];
     final tuitionDescription = tuition['tuition_description'];
-    final tuitionIsPremium = tuition['tuition_isPremium'];
     final tuitionIsOnline = tuition['tuition_isOnline'];
 
     return Padding(
@@ -221,7 +219,7 @@ class TuitionTile extends StatelessWidget {
             backgroundImage: AssetImage('assets/book.png'),
           ),
           title: Text(tuitionName,
-            style: TextStyle(color: tuitionIsPremium? purplePlus : orangePlus),
+            style: TextStyle(color: isPremium? purplePlus : orangePlus),
           ),
           subtitle: Text('Subject: '+ tuitionCategory +'\nLevel: '+ tuitionLevel),
           trailing: Column(
@@ -234,7 +232,7 @@ class TuitionTile extends StatelessWidget {
                     context: context, 
                     tuitionName: tuitionName, 
                     tuitionDescription: tuitionDescription, 
-                    tuitionIsPremium: tuitionIsPremium,
+                    tuitionIsPremium: isPremium,
                     tuitionIsOnline: tuitionIsOnline,
                   );
                 },

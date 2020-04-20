@@ -7,6 +7,7 @@ const yellowPlus = Color(0xffffca2b);
 const amberPlus = Color(0xffffa714);
 const orangePlus = Color(0xfff5820c);
 const purplePlus = Color(0xff7e57c2);
+const pinkPlus = Color(0xffe90f70);
 
 const textInputDecoration = InputDecoration(
   fillColor: Colors.white,

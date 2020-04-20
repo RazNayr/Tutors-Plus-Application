@@ -33,12 +33,7 @@ class _EditTutorProfileState extends State<EditTutorProfile> {
     screenHeight = size.height;
     screenWidth = size.width;
 
-    return _loading? Loading() : Scaffold(
-      appBar: AppBar(
-        backgroundColor: orangePlus,
-        elevation: 0.0,
-      ),
-
+    return _loading? (tutorData.isPremium? PremiumLoading() : Loading()) : Scaffold(
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -60,7 +55,7 @@ class _EditTutorProfileState extends State<EditTutorProfile> {
               children: [
                 _buildTitleCont(),
                 SizedBox(height: 10),
-                _buildImageCont(),
+                _buildImageCont(tutorData),
                 SizedBox(height: 30),
                 _buildIsOnlineCont(tutorData.isOnline),
                 SizedBox(height: 10),
@@ -93,11 +88,11 @@ class _EditTutorProfileState extends State<EditTutorProfile> {
     );
   }
 
-  Widget _buildImageCont(){
+  Widget _buildImageCont(tutorData){
     return Stack(
       children: [
         CircleAvatar(
-          backgroundColor: orangePlus,
+          backgroundColor: tutorData.isPremium? purplePlus : orangePlus,
           backgroundImage: AssetImage('assets/tutor.png'),
           radius: screenWidth * 0.2,
         ),

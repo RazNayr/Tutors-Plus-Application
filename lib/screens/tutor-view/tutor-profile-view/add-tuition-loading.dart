@@ -4,8 +4,12 @@ import 'package:tutorsplus/shared/common.dart';
 
 class AddingTuition extends StatelessWidget {
 
+  final bool isPremium;
+
+  AddingTuition({this.isPremium});
+
   final loadingColours = [orangePlus, amberPlus];
-  //final loadingColoursPremium = [purplePlus, Colors.deepPurple[200]];
+  final loadingColoursPremium = [purplePlus, Colors.deepPurple[200]];
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,7 @@ class AddingTuition extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 return DecoratedBox(
                   decoration: BoxDecoration(
-                    color: loadingColours[index%2]
+                    color: isPremium? loadingColoursPremium[index%2] : loadingColours[index%2]
                   ),
                 );
               },

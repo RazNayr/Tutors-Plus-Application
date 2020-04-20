@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/tutor.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/add-tuition-view.dart';
+import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/public-profile-view.dart';
 import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/tuition-view.dart';
+import 'package:tutorsplus/screens/tutor-view/tutor-profile-view/tutor-actions/upgrade-tutor-view.dart';
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
@@ -13,13 +15,14 @@ import 'tutor-actions/analytics-view.dart';
 import 'tutor-actions/edit-profile-view.dart';
 
 class TutorProfile extends StatefulWidget {
+  
   @override
   _TutorProfileState createState() => _TutorProfileState();
 }
 
 class _TutorProfileState extends State<TutorProfile> {
 
-  void _alertDialogMaxTuition(BuildContext context) {
+  void _alertDialogMaxTuition(BuildContext context, TutorData tutorData) {
     var alert = AlertDialog(
       title: Text("You have reached your tuition limit.",
         style: TextStyle(color: greyPlus, fontWeight: FontWeight.bold),
@@ -47,14 +50,17 @@ class _TutorProfileState extends State<TutorProfile> {
           )
         ),
         FlatButton(
-          onPressed: null, 
           child: Text("Yes",
             style: TextStyle(
               fontSize: 16,
               color: purplePlus,
               fontWeight: FontWeight.bold
             ),
-          )
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(context, SlideToRoute(page: UpgradeTutor(tutorData: tutorData),type: "right"));
+          },
         ),
       ],
       //shape: CircleBorder(),
@@ -68,7 +74,7 @@ class _TutorProfileState extends State<TutorProfile> {
     );
   }
 
-  void _alertDialogPremiumFeature(BuildContext context) {
+  void _alertDialogPremiumFeature(BuildContext context, TutorData tutorData) {
     var alert = AlertDialog(
       title: Text("Oops!\nYou found a premium feature",
         style: TextStyle(color: greyPlus, fontWeight: FontWeight.bold),
@@ -96,14 +102,17 @@ class _TutorProfileState extends State<TutorProfile> {
           )
         ),
         FlatButton(
-          onPressed: null, 
           child: Text("Yes",
             style: TextStyle(
               fontSize: 16,
               color: purplePlus,
               fontWeight: FontWeight.bold
             ),
-          )
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(context, SlideToRoute(page: UpgradeTutor(tutorData: tutorData),type: "right"));
+          },
         ),
       ],
       //shape: CircleBorder(),
@@ -115,6 +124,27 @@ class _TutorProfileState extends State<TutorProfile> {
       builder: (BuildContext context) => alert,
       barrierDismissible: true,
     );
+  }
+  
+  Widget _buildUpgradeToPremiumTile(tutordata){
+
+    final tutorData = tutordata;
+
+    if(tutorData.isPremium){
+      return SizedBox();
+    }else{
+      return ListTile(
+        contentPadding: EdgeInsets.all(0),
+        dense: true,
+        title: Text(
+          "Upgrade to Premium",
+          style: TextStyle(color: greyPlus, fontSize: 20)),
+        leading: Icon(Icons.multiline_chart),
+        onTap: () {
+          Navigator.push(context, SlideToRoute(page: UpgradeTutor(tutorData: tutorData),type: "right"));
+        }
+      );
+    }
   }
 
   Widget _toggleNewTuitionIcon(tutordata){
@@ -152,7 +182,7 @@ class _TutorProfileState extends State<TutorProfile> {
                   width: 160,
                   height: 160,
                   decoration: BoxDecoration(
-                    color: orangePlus,
+                    color: tutorData.isPremium? purplePlus : orangePlus,
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.fill,
@@ -161,17 +191,7 @@ class _TutorProfileState extends State<TutorProfile> {
                   ),
                 ),
 
-                ListTile(
-                  contentPadding: EdgeInsets.all(0),
-                  dense: true,
-                  title: Text(
-                    "Upgrade to Premium",
-                    style: TextStyle(color: greyPlus, fontSize: 20)),
-                  leading: Icon(Icons.multiline_chart),
-                  onTap: () {
-                    
-                  }
-                ),
+                _buildUpgradeToPremiumTile(tutorData),
                 
                 ListTile(
                   contentPadding: EdgeInsets.all(0),
@@ -193,7 +213,7 @@ class _TutorProfileState extends State<TutorProfile> {
                     style: TextStyle(color: greyPlus, fontSize: 20)),
                   leading: Icon(Icons.insert_emoticon),
                   onTap: () {
-                    
+                    Navigator.push(context, SlideToRoute(page: PublicTutorProfile(tutorData: tutorData),type: "right"));
                   }
                 ),
 
@@ -210,7 +230,7 @@ class _TutorProfileState extends State<TutorProfile> {
                       if(tutorData.isPremium){
                         Navigator.push(context, SlideToRoute(page: AddTuition(tutorData: tutorData),type: "right"));
                       }else{
-                        _alertDialogMaxTuition(context);
+                        _alertDialogMaxTuition(context, tutorData);
                       }
                     }else{
                       Navigator.push(context, SlideToRoute(page: AddTuition(tutorData: tutorData),type: "right"));
@@ -242,7 +262,7 @@ class _TutorProfileState extends State<TutorProfile> {
                     if(tutorData.isPremium){
                       Navigator.push(context, SlideToRoute(page: Analytics(tutorData: tutorData),type: "right"));
                     }else{
-                      _alertDialogPremiumFeature(context);
+                      _alertDialogPremiumFeature(context, tutorData);
                     }
                   }
                 ),
@@ -252,7 +272,7 @@ class _TutorProfileState extends State<TutorProfile> {
           );
 
         }else{
-          return Loading();
+          return BlankLoading();
         }
       }
     );

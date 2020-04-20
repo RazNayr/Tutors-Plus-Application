@@ -15,7 +15,11 @@ class _MessengerState extends State<Messenger> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue,
+      //color: Colors.blue,
+      child: FittedBox(
+        child: Image.asset('assets/sample_chat.png'),
+        fit: BoxFit.fill,
+      ),
     );
   }
 }

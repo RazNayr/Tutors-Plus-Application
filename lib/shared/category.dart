@@ -19,7 +19,7 @@ class Category{
       'Electrical Engineering',
       'English Literature',
       'English',
-      'Entrepreneurship'
+      'Entrepreneurship',
       'Environmental Science',
       'French',
       'Geography',

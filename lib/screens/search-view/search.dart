@@ -30,7 +30,6 @@ class _SearchState extends State<Search> {
   bool _mapReady = false;
   bool mapToggle = false;
   String _mapStyle;
-  bool tuitionsToggle = false;
   MapType _currentMapType = MapType.normal;
 
   int _selectedTuitionIndex = -1;
@@ -127,9 +126,6 @@ class _SearchState extends State<Search> {
   void populateTuitions() {
     Firestore.instance.collection('tuition').getDocuments().then((docs) {
       if (docs.documents.isNotEmpty) {
-        setState(() {
-          tuitionsToggle = true;
-        });
         for (int i = 0; i < docs.documents.length; ++i) {
           String tuitionId = LatLng(
                   docs.documents[i].data['tuition_geopoint'].latitude,

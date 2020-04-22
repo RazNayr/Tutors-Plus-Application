@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tutorsplus/models/tuition.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tutorsplus/screens/home-view/tuition_tile.dart';
-import '../../shared/common.dart';
+import 'package:tutorsplus/services/database.dart';
+import 'package:tutorsplus/shared/loading.dart';
 import '../../shared/common.dart';
 
 class Home extends StatefulWidget {
-  final UserData userData;
 
+  final UserData userData;
   Home({this.userData});
 
   @override
@@ -18,6 +20,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  double height = 0;
+  double width = 0;
+
+  int _current = 0;
   int _timeDay = 0;
   bool tuitionsToggle = false;
   List <Tuition> tuitions = List<Tuition>();
@@ -27,13 +33,12 @@ class _HomeState extends State<Home> {
     setState(() {
       if (hour < 12) {
         _timeDay = 1;
-      }
-      if (hour < 17) {
+      } else if (hour < 17) {
         _timeDay = 2;
+      }else{
+        _timeDay = 3;
       }
-      _timeDay = 3;
     });
-    print(hour);
   }
 
   void populateTuitions() {
@@ -83,7 +88,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget _carouselSlider(BuildContext context) {
-    int _current = 0;
+    
     final List<String> imgList = [
       'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
       'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
@@ -96,7 +101,7 @@ class _HomeState extends State<Home> {
     final List<Widget> imageSliders = imgList
         .map((item) => Container(
               child: Container(
-                margin: EdgeInsets.all(5.0),
+                margin: EdgeInsets.symmetric(horizontal:2.0, vertical: 2.0),
                 child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     child: Stack(
@@ -135,16 +140,18 @@ class _HomeState extends State<Home> {
             ))
         .toList();
 
-    return Column(children: <Widget>[
+    return Column(
+    children: <Widget>[
       CarouselSlider(
         items: imageSliders,
         options: CarouselOptions(
-            height: 140,
+            height: height * 0.3,
             aspectRatio: 16 / 9,
             autoPlay: true,
-            autoPlayInterval: Duration(seconds: 4),
+            autoPlayInterval: Duration(seconds: 5),
             autoPlayAnimationDuration: Duration(milliseconds: 800),
             autoPlayCurve: Curves.fastOutSlowIn,
+            initialPage: 0,
             onPageChanged: (index, reason) {
               setState(() {
                 _current = index;
@@ -152,17 +159,15 @@ class _HomeState extends State<Home> {
             }),
       ),
       Container(
-        height: 45,
+        height: height*0.06,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: imgList.map((url) {
-            int index;
-            setState(() => index = imgList.indexOf(url));
-            //print(index);
+            int index = imgList.indexOf(url);
             return Container(
-              width: 16.0,
-              height: 8.0,
-              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+              width: 10,
+              height: 10,
+              margin: EdgeInsets.symmetric(horizontal: 4.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _current == index ? orangePlus : greyPlus,
@@ -174,123 +179,165 @@ class _HomeState extends State<Home> {
     ]);
   }
 
-  Widget _loadNewTuition(BuildContext context) {
-    var listView =  ListView.builder(
-        itemCount: tuitions.length,
-        itemBuilder: (BuildContext context, int index) {
-          return TuitionTile(
-              tuition: tuitions[index], index: index,);
-        });
-    return listView;
+  Widget _loadNewTuition(UserData userData, List<Tuition> tuitionList) {
+
+    List<String> userInterests = userData.interests;
+
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(0,0,0,10),
+      itemCount: tuitionList.length,
+      itemBuilder: (context, index){
+
+        Tuition tuition = tuitionList[index];
+        if(userInterests.contains(tuition.category)){
+          return TuitionTile(tuition: tuition, index: index,);
+        }else{
+          return SizedBox();
+        }
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: blackPlus,
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: 45),
-          Container(
-              width: MediaQuery.of(context).size.width / 1.1,
-              height: MediaQuery.of(context).size.height / 10,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30.0),
-                color: whitePlus,  
-                border: Border.all(
-                  color: greyPlus,
-                  width: 1.5,
-                ),              
-              ),
-              child: Center(
-                  child: _timeDay == 1
-                      ? Text(
-                          'Good Morning! 🌞',
-                          style: TextStyle(
-                            color: blackPlus,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 38,
+
+    height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
+
+    return StreamBuilder<List<Tuition>>(
+      stream: DatabaseService().tuitionList,
+      builder: (context, snapshot) {
+        if(snapshot.hasData){
+          
+          List<Tuition> tuitionList = snapshot.data;
+
+          return Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: blackPlus,
+
+            child: Column(
+              children: <Widget>[
+
+                // SizedBox(height: 30),
+                
+                // Container(
+                //     width: width* 0.9,
+                //     height: height * 0.1,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(30.0),
+                //       color: whitePlus,  
+                //       border: Border.all(
+                //         color: greyPlus,
+                //         width: 1.5,
+                //       ),              
+                //     ),
+                //     child: Center(
+                //         child: _timeDay == 1
+                //             ? Text(
+                //                 'Good Morning! 🌞',
+                //                 style: TextStyle(
+                //                   color: blackPlus,
+                //                   fontWeight: FontWeight.bold,
+                //                   fontSize: 38,
+                //                 ),
+                //               )
+                //             : _timeDay == 2
+                //                 ? Text(
+                //                     'Good Afternoon! ☀️',
+                //                     style: TextStyle(
+                //                       color: blackPlus,
+                //                       fontWeight: FontWeight.bold,
+                //                       fontSize: 38,
+                //                     ),
+                //                   )
+                //                 : Text(
+                //                     'Good Evening! 🌙',
+                //                     style: TextStyle(
+                //                       color: blackPlus,
+                //                       fontWeight: FontWeight.bold,
+                //                       fontSize: 38,
+                //                     ),
+                //                   ))),
+
+                SizedBox(height: 20),
+
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: height*0.5, 
+                    minHeight: 0, 
+                    maxWidth: width*0.9,
+                    minWidth: width*0.9
+                  ),
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30.0),
+                      color: whitePlus,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                          child: Text(
+                            'New offers coming your way...',
+                            style: TextStyle(
+                              color: greyPlus,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold
+                            ),
                           ),
-                        )
-                      : _timeDay == 2
-                          ? Text(
-                              'Good Afternoon! ☀️',
-                              style: TextStyle(
-                                color: blackPlus,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 38,
-                              ),
-                            )
-                          : Text(
-                              'Good Evening! 🌙',
-                              style: TextStyle(
-                                color: blackPlus,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 38,
-                              ),
-                            ))),
-          SizedBox(height: 30),
-          Container(
-            width: MediaQuery.of(context).size.width / 1.1,
-            //height: MediaQuery.of(context).size.height / 3.21,
-            height: MediaQuery.of(context).size.height / 3,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30.0),
-              color: whitePlus,
-            ),
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 15),
-                Container(
-                  padding: EdgeInsets.fromLTRB(0, 5, 60, 0),
-                  child: Text(
-                    'New offers coming your way...',
-                    style: TextStyle(
-                      color: greyPlus,
-                      fontSize: 20,
+                        ),
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: _carouselSlider(context),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+
+                SizedBox(height: 20),
+
                 Container(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                  child: _carouselSlider(context),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 30),
-          Container(
-            width: MediaQuery.of(context).size.width / 1.1,
-            //height: MediaQuery.of(context).size.height / 3.21,
-            height: MediaQuery.of(context).size.height / 3.2,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30.0),
-              color: whitePlus,
-            ),
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 15),
-                Container(
-                  padding: EdgeInsets.fromLTRB(0, 5, 1, 0),
-                  child: Text(
-                    'Check out new tuition that you might like!',
-                    style: TextStyle(
-                      color: greyPlus,
-                      fontSize: 19,
-                    ),
+                  width: width * 0.9,
+                  height: height * 0.38,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: whitePlus,
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        child: Text(
+                          'Check out new tuition that you might like!',
+                          style: TextStyle(
+                            color: greyPlus,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.9,
+                        height: height*0.3,
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: tuitionsToggle ? _loadNewTuition(widget.userData, tuitionList) : null,
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width / 1.1,
-                  height: MediaQuery.of(context).size.height / 3.9,
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                  child: tuitionsToggle ? _loadNewTuition(context) : null,
-                ),
               ],
             ),
-          ),
-        ],
-      ),
+          );
+        }else{
+          return Loading();
+        }
+        
+      }
     );
   }
 }

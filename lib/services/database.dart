@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tutorsplus/models/tuition.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/models/tutor.dart';
 
@@ -276,33 +277,6 @@ class DatabaseService {
     return await tuitionCollection.document(tuitionDoc.documentID).delete();
   }
 
-  // // brew list from snapshot
-  // List<Brew> _brewListFromSnapshot(QuerySnapshot snapshot) {
-  //   return snapshot.documents.map((doc){
-  //     //print(doc.data);
-  //     return Brew(
-  //       name: doc.data['name'] ?? '',
-  //       strength: doc.data['strength'] ?? 0,
-  //       sugars: doc.data['sugars'] ?? '0'
-  //     );
-  //   }).toList();
-  // }
-
-  //This function is really beneficial is you need a static object which will never change. Otherwise, always sue streams.
-  // List<String> userPrefsFromSnapshot() {
-  //   //DOC REFERENCE TO SET AND UPDATE DATA
-  //   final DocumentReference doc = userCollection.document(uid);
-  //   doc.get().then((onValue){
-  //     return onValue['user_interests'];
-  //   });
-  // }
-
-  // // get brews stream
-  // Stream<List<Brew>> get brews {
-  //   return brewCollection.snapshots()
-  //     .map(_brewListFromSnapshot);
-  // }
-
   // get user doc stream
   Stream<UserData> get userData {
     return userCollection.document(uid).snapshots()
@@ -356,6 +330,32 @@ class DatabaseService {
       analytics: snapshot.data['tutor_analytics'],
     );
   }
+
+  // get brews stream
+  Stream<List<Tuition>> get tuitionList {
+    return tuitionCollection.snapshots()
+      .map(_tuitionListFromSnapshot);
+  }
+
   
+    // brew list from snapshot
+  List<Tuition> _tuitionListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc){
+      return Tuition(
+        id: doc.documentID,
+        isPremium: doc.data['tuition_isPremium'],
+        isOnline: doc.data['tuition_isOnline'],
+        category: doc.data['tuition_category'],
+        level: doc.data['tuition_level'],
+        name: doc.data['tuition_name'],
+        tutor: doc.data['tuition_tutor'],
+        description: doc.data['tuition_description'],
+        locality: doc.data['tuition_locality'],
+        tutorRef: doc.data['tuition_tutorRef'],
+        latitude: doc.data['tuition_geopoint'].latitude,
+        longitude: doc.data['tuition_geopoint'].longitude,
+      );
+    }).toList();
+  }
 
 }

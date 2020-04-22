@@ -25,6 +25,10 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
   double screenWidth;
   double screenHeight;
 
+  void rebuildWidget(){
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     
@@ -74,6 +78,7 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
                           Align(
                             alignment: Alignment.center,
                             child:Container(
+                              margin: EdgeInsets.fromLTRB(0,30,0,0),
                               width: 160,
                               height: 160,
                               decoration: BoxDecoration(
@@ -82,6 +87,20 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
                                 image: DecorationImage(
                                   fit: BoxFit.fill,
                                   image: AssetImage('assets/tutor.png')
+                                ),
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child:Container(
+                              padding: EdgeInsets.symmetric(vertical: 40),
+                              width: double.infinity,
+                              child: Text(tutorData.fname+" "+tutorData.lname,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: whitePlus,
+                                  fontSize: 20
                                 ),
                               ),
                             ),
@@ -101,7 +120,7 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
                             ),
                           ),
                           Align(
-                            alignment: Alignment.bottomRight,
+                            alignment: Alignment.bottomCenter,
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: SmoothStarRating(
@@ -238,7 +257,7 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
 
                     SizedBox(height: 30,),
 
-                    _buildAddReviewWidget(tutorData: tutorData, user: user, context: context),
+                    _buildAddReviewWidget(tutorData: tutorData, user: user, context: context, rebuildWidget: rebuildWidget),
                   ],
                 ),
               ),
@@ -480,7 +499,7 @@ Widget _buildReviewsWidget(tutorData){
   }
 }
 
-Widget _buildAddReviewWidget({tutorData, user, context}){
+Widget _buildAddReviewWidget({tutorData, user, context, rebuildWidget}){
   bool canAddReview = DatabaseService(uid: user.uid).isPastStudent(tutorData);
 
   if(canAddReview){
@@ -506,6 +525,7 @@ Widget _buildAddReviewWidget({tutorData, user, context}){
         ),
         onPressed: () {
           Navigator.push(context, SlideToRoute(page: ReviewTutor(user: user, tutorData: tutorData),type: "bottom"));
+          rebuildWidget();
         }
       ),
     );
@@ -541,7 +561,7 @@ void _alertDialogTuitionInfo({BuildContext context, tuitionName, tuitionDescript
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Text("Enroll",
+              child: Text("Enrol",
                 style: TextStyle(
                   color: amberPlus
                 )

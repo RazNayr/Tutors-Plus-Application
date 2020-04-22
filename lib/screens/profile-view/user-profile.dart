@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/services/auth.dart';
 import 'package:tutorsplus/shared/common.dart';
+import 'package:tutorsplus/shared/transition-animations.dart';
 
 import 'user-actions/edit-profile-view.dart';
 import 'user-actions/favourites-view.dart';
@@ -51,7 +52,7 @@ class _UserProfileState extends State<UserProfile> {
               style: TextStyle(color: greyPlus, fontSize: 20)),
             leading: Icon(Icons.person_outline),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => EditUserProfile(userData: userData)));
+              Navigator.push(context, SlideToRoute(page: EditUserProfile(userData: userData),type: "left"));
             }
           ),
 
@@ -72,7 +73,7 @@ class _UserProfileState extends State<UserProfile> {
               style: TextStyle(color: greyPlus, fontSize: 20)),
             leading: Icon(Icons.format_list_bulleted),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserLessons(userData: userData)));
+              Navigator.push(context, SlideToRoute(page: UserLessons(userData: userData),type: "left"));
             }
           ),
 
@@ -84,7 +85,7 @@ class _UserProfileState extends State<UserProfile> {
               style: TextStyle(color: greyPlus, fontSize: 20)),
             leading: Icon(Icons.favorite_border),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserFavourites(userData: userData)));
+              Navigator.push(context, SlideToRoute(page: UserFavourites(userData: userData),type: "left"));
             }
           ),
 

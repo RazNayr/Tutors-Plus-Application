@@ -16,9 +16,9 @@ class TutorTuition extends StatefulWidget {
 
 class _TutorTuitionState extends State<TutorTuition> {
 
-  void _removeTuition({tuitionRef, tuitionIndex}) {
+  void _removeTuition({tuitionRef, tuitionIndex, tuitionName}) {
     setState(() async{
-      await DatabaseService(uid: widget.tutorData.uid).removeTuition(tuitionRef,tuitionIndex);
+      await DatabaseService(uid: widget.tutorData.uid).removeTuition(tuitionRef,tuitionIndex,tuitionName);
     });
   }
 
@@ -150,6 +150,7 @@ class TuitionTile extends StatelessWidget {
   void _alertDialogConfirmDeletion({BuildContext context}) {
 
     final tuitionRef = tuition['tuition_ref'];
+    final tuitionName = tuition['tuition_name'];
 
     var alert = AlertDialog(
       backgroundColor: whitePlus,
@@ -185,7 +186,7 @@ class TuitionTile extends StatelessWidget {
           ),
           onTap: (){
             Navigator.pop(context);
-            removeTuition(tuitionRef: tuitionRef, tuitionIndex: tuitionIndex);
+            removeTuition(tuitionRef: tuitionRef, tuitionIndex: tuitionIndex, tuitionName: tuitionName);
           },
         ),
       ],

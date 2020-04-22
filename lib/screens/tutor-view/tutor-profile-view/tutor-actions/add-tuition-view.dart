@@ -307,8 +307,7 @@ class _AddTuitionState extends State<AddTuition> {
                               decoration: InputDecoration(
                                   hintText: 'Name of your Tuition...',
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 20)),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
                               validators: [
                                 FormBuilderValidators.required(
                                     errorText: "Tuition name required")

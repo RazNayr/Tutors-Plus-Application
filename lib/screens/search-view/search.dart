@@ -10,12 +10,18 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'dart:async';
 
 import 'package:tutorsplus/models/tuition.dart';
+import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/screens/search-view/tuition_tile.dart';
+import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/category.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/locality.dart';
 
 class Search extends StatefulWidget {
+
+  final UserData userData;
+  Search({this.userData});
+
   @override
   _SearchState createState() => _SearchState();
 }
@@ -44,6 +50,7 @@ class _SearchState extends State<Search> {
   Map<String, Tuition> tuitions = <String, Tuition>{};
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   List<Tuition> tuitionsOnMap = List<Tuition>();
+  List userFavourites = List();
   var mapDistances = Map();
   List<Tuition> premiumTuitionsOnMap = List<Tuition>();
   List<Tuition> freemiumTuitionsOnMap = List<Tuition>();
@@ -119,6 +126,7 @@ class _SearchState extends State<Search> {
         currentLocation = currloc;
         mapToggle = true;
         populateTuitions();
+        initialiseUserFavourites();
       });
     });
   }
@@ -127,10 +135,6 @@ class _SearchState extends State<Search> {
     Firestore.instance.collection('tuition').getDocuments().then((docs) {
       if (docs.documents.isNotEmpty) {
         for (int i = 0; i < docs.documents.length; ++i) {
-          String tuitionId = LatLng(
-                  docs.documents[i].data['tuition_geopoint'].latitude,
-                  docs.documents[i].data['tuition_geopoint'].longitude)
-              .toString();
           Tuition newTuition = new Tuition(
             // tuitionId,
             // docs.documents[i].data['tuition_title'],
@@ -141,7 +145,7 @@ class _SearchState extends State<Search> {
             // docs.documents[i].data['locality'],
             // docs.documents[i].data['tuition_geopoint'].longitude,
             // docs.documents[i].data['tuition_geopoint'].latitude);
-            id: tuitionId,
+            id: docs.documents[i].documentID,
             isPremium: docs.documents[i].data['tuition_isPremium'],
             isOnline: docs.documents[i].data['tuition_isOnline'],
             category: docs.documents[i].data['tuition_category'],
@@ -154,7 +158,7 @@ class _SearchState extends State<Search> {
             latitude: docs.documents[i].data['tuition_geopoint'].latitude,
             longitude: docs.documents[i].data['tuition_geopoint'].longitude,
           );
-          tuitions[tuitionId] = newTuition;
+          tuitions[docs.documents[i].documentID] = newTuition;
           _addNewMarker(newTuition);
         }
       }
@@ -479,16 +483,37 @@ class _SearchState extends State<Search> {
     }
   }
 
+  void initialiseUserFavourites() async {
+    var tempList = await DatabaseService(uid: widget.userData.uid).getUserFavourites();
+    setState(() {
+      userFavourites = tempList;
+    });
+  }
+
   Widget _tuitionListView(BuildContext context) {
+    
     var listView = ListView.builder(
       itemCount: sortedTuitionsOnMap.length,
       controller: _scrollController,
       itemBuilder: (BuildContext context, int index) {
+
+        var tuition = sortedTuitionsOnMap[index];
+        bool tuitionIsFavourited = false;
+        userFavourites.forEach((favourite){
+          if(favourite['tuition_name'] == tuition.name && favourite['tuition_tutorRef'].path == tuition.tutorRef.path){
+            tuitionIsFavourited = true;
+          }
+        });
+        
         return TuitionTile(
-            tuition: sortedTuitionsOnMap[index],
-            premiumTuitionsCount: premiumTuitionsOnMap.length,
-            currentIndex: index,
-            selectedTuitionIndex: _selectedTuitionIndex);
+          tuition: sortedTuitionsOnMap[index],
+          premiumTuitionsCount: premiumTuitionsOnMap.length,
+          currentIndex: index,
+          selectedTuitionIndex: _selectedTuitionIndex,
+          userData: widget.userData,
+          tuitionIsFavourited: tuitionIsFavourited,
+          rebuildSearch: initialiseUserFavourites,
+        );
       },
     );
     return _noneAvailable && _mapReady

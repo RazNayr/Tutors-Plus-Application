@@ -60,9 +60,9 @@ class DatabaseService {
     });
 
     // Update modified list of user favourites
-    favouritesToRemove.forEach((removedFav){
+    favouritesToRemove.forEach((favToRemove){
       _modifiedFavouritesList.removeWhere((previousFav){
-        return previousFav['tuition_ref'].path == removedFav;
+        return previousFav['tuition_ref'].path == favToRemove;
       });
     });
 
@@ -72,12 +72,77 @@ class DatabaseService {
     });
   }
 
+  Future<void> addFavourite(Tuition tuition) async {
+
+    List<Map<dynamic, dynamic>> _modifiedFavouritesList = List();
+    final DocumentReference userDoc = userCollection.document(uid);
+    final DocumentReference tuitionDoc = tuitionCollection.document(tuition.id);
+    Map newFavourite = new Map();
+
+    newFavourite['tuition_name'] = tuition.name;
+    newFavourite['tuition_category'] = tuition.category;
+    newFavourite['tuition_level'] = tuition.level;
+    newFavourite['tuition_tutor'] = tuition.tutor;
+    newFavourite['tuition_description'] = tuition.description;
+    newFavourite['tuition_ref'] = tuitionDoc;
+    newFavourite['tuition_tutorRef'] = tuition.tutorRef;
+    newFavourite['tuition_isPremium'] = tuition.isPremium;
+    newFavourite['tuition_isOnline']= tuition.isOnline;
+
+    // Fetch user favourites from database
+    _modifiedFavouritesList = await userDoc.get().then((onValue){
+      return onValue['user_favourites'].cast<Map>();
+    });
+
+    _modifiedFavouritesList.add(newFavourite);
+
+    // Update database with modified list
+    return await userDoc.updateData({
+        'user_favourites': _modifiedFavouritesList
+    });
+  }
+
+  Future<void> removeFavourite(Tuition tuition) async {
+
+    List<Map<dynamic, dynamic>> _modifiedFavouritesList = List();
+    final DocumentReference userDoc = userCollection.document(uid);
+    final DocumentReference favToRemove = tuitionCollection.document(tuition.id);
+
+    // Fetch user favourites from database
+    _modifiedFavouritesList = await userDoc.get().then((onValue){
+      return onValue['user_favourites'].cast<Map>();
+    });
+
+    // Update modified list of user favourites
+    _modifiedFavouritesList.removeWhere((previousFav){
+      return previousFav['tuition_ref'].path == favToRemove.path;
+    });
+
+    // Update database with modified list
+    return await userDoc.updateData({
+        'user_favourites': _modifiedFavouritesList
+    });
+  }
+
+  Future<List<Map>> getUserFavourites() async {
+    final DocumentReference userDoc = userCollection.document(uid);
+    List<Map> userFavouritesList = List();
+
+    // Fetch user favourites from database
+    userFavouritesList = await userDoc.get().then((onValue){
+      return onValue['user_favourites'].cast<Map>();
+    });
+
+    return userFavouritesList;
+  }
+
   Future<void> enrollInTuition(DocumentReference tutorRef, Map newTuition) async {
 
     List<Map<dynamic, dynamic>> _modifiedUserLessonsList = List();
     List<DocumentReference> _modifiedStudentsList = List();
     final DocumentReference userDoc = userCollection.document(uid);
     final DocumentReference tutorDoc = tutorCollection.document(tutorRef.documentID);
+    bool userAlreadyEnrolled = false;
 
     // Fetch user lessons from database
     _modifiedUserLessonsList = await userDoc.get().then((onValue){
@@ -89,8 +154,16 @@ class DatabaseService {
       return onValue['tutor_students'].cast<DocumentReference>();
     });
     
-    _modifiedUserLessonsList.add(newTuition);
-    _modifiedStudentsList.add(userDoc);
+    _modifiedUserLessonsList.forEach((userLesson){
+      if(userLesson['tuition_name'] == newTuition['tuition_name'] && userLesson['tuition_tutorRef'] == newTuition['tuition_tutorRef']){
+        userAlreadyEnrolled = true;
+      }
+    });
+
+    if(!userAlreadyEnrolled){
+      _modifiedUserLessonsList.add(newTuition);
+      _modifiedStudentsList.add(userDoc);
+    }
 
     // Update tutor docuemnt with modified students list
     await tutorDoc.updateData({
@@ -100,6 +173,24 @@ class DatabaseService {
     // Update database with modified list
     return await userDoc.updateData({
         'user_lessons': _modifiedUserLessonsList
+    });
+  }
+
+  Future<void> cancelLesson(String tuitionName, DocumentReference tutorRef) async {
+
+    List<Map<dynamic, dynamic>> _modifiedUserLessonList = List();
+    final DocumentReference userDoc = userCollection.document(uid);
+
+    _modifiedUserLessonList = await userDoc.get().then((onValue){
+      return onValue['user_lessons'].cast<Map>();
+    });
+
+    _modifiedUserLessonList.removeWhere((previousLesson){
+      return previousLesson['tuition_tutorRef'].path == tutorRef.path && previousLesson['tuition_name'] == tuitionName;
+    });
+
+    return await userDoc.updateData({
+        'user_lessons': _modifiedUserLessonList
     });
   }
 
@@ -256,7 +347,7 @@ class DatabaseService {
     });
   }
 
-  Future<void> removeTuition(DocumentReference tuitionDoc, int tuitionIndex) async {
+  Future<void> removeTuition(DocumentReference tuitionDoc, int tuitionIndex, String tuitionName) async {
 
     List<Map<dynamic, dynamic>> _modifiedTutorTuitionList = List();
     final DocumentReference tutordoc = tutorCollection.document(uid);
@@ -272,6 +363,33 @@ class DatabaseService {
     // Update tutor doc with modified list
     await tutordoc.updateData({
         'tutor_tuition': _modifiedTutorTuitionList
+    });
+
+    userCollection.getDocuments().then((onValue){
+      onValue.documents.forEach((userDoc) async{
+        List userLessons = userDoc['user_lessons'].cast<Map>();
+        List userFavourites = userDoc['user_favourites'].cast<Map>();
+
+        List copyUserList = List.from(userLessons);
+        copyUserList.forEach((lesson){
+          if(lesson['tuition_name'] == tuitionName && lesson['tuition_tutorRef'].path == tutordoc.path){
+            userLessons.remove(lesson);
+          }
+        });
+
+        copyUserList = List.from(userFavourites);
+        copyUserList.forEach((favourite){
+          if(favourite['tuition_name'] == tuitionName && favourite['tuition_tutorRef'].path == tutordoc.path){
+            userFavourites.remove(favourite);
+          }
+        });
+
+        await userCollection.document(userDoc.documentID).updateData({
+          'user_lessons': userLessons,
+          'user_favourites': userFavourites
+        });
+
+      });
     });
 
     return await tuitionCollection.document(tuitionDoc.documentID).delete();
@@ -312,7 +430,7 @@ class DatabaseService {
   // tutor data from snapshots
   TutorData _tutorDataFromSnapshot(DocumentSnapshot snapshot) {
     return TutorData(
-      uid: uid,
+      uid: snapshot.documentID,
       fname: snapshot.data['tutor_fname'],
       lname: snapshot.data['tutor_lname'],
       bio: snapshot.data['tutor_bio'],

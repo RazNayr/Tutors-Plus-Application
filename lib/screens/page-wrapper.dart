@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:tutorsplus/screens/search-view/search.dart';
-import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/bottom-app-bar.dart';
 import 'package:tutorsplus/shared/common.dart';
-import 'package:tutorsplus/shared/loading.dart';
 import 'package:tutorsplus/shared/transition-animations.dart';
 
 import 'home-view/homepage.dart';
@@ -14,7 +11,10 @@ import 'profile-view/user-profile.dart';
 import 'tutor-view/tutor-wrapper.dart';
 
 class PageWrapper extends StatefulWidget {
-  PageWrapper({Key key}) : super(key: key);
+
+  final UserData userData;
+
+  PageWrapper({Key key, this.userData}) : super(key: key);
 
   @override
   _PageWrapperState createState() => new _PageWrapperState();
@@ -25,7 +25,7 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
 
   //When tapping the Floating Action Button
   void _selectedFab() {
-    Navigator.push(context, ScaleToRoute(page: Search()));
+    Navigator.push(context, ScaleToRoute(page: Search(userData: widget.userData)));
   }
 
   PageController pageController = PageController(
@@ -33,17 +33,17 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
     keepPage: true,
   );
 
-  Widget buildPageView(userData) {
+  Widget buildPageView() {
     return PageView(
       controller: pageController,
       onPageChanged: (index) {
         pageChanged(index);
       },
       children: <Widget>[
-        UserProfile(userData: userData),
-        Home(userData: userData),
-        Messenger(userData: userData),
-        TutorWrapper(userData: userData),
+        UserProfile(userData: widget.userData),
+        Home(userData: widget.userData),
+        Messenger(userData: widget.userData),
+        TutorWrapper(userData: widget.userData),
       ],
     );
   }
@@ -73,22 +73,10 @@ class _PageWrapperState extends State<PageWrapper> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
 
-    final user = Provider.of<User>(context);
-
     return Scaffold(
       backgroundColor: whitePlus,
 
-      body: StreamBuilder<Object>(
-        stream: DatabaseService(uid: user.uid).userData,
-        builder: (context, snapshot) {
-          if(snapshot.hasData){
-            UserData userData = snapshot.data;
-            return buildPageView(userData);
-          }else{
-            return Loading();
-          }
-        }
-      ),
+      body: buildPageView(),
 
       bottomNavigationBar: FABBottomAppBar(
         currentIndex: bottomSelectedIndex,

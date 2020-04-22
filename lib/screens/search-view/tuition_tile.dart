@@ -1,50 +1,110 @@
 import 'package:flutter/material.dart';
 import 'package:tutorsplus/models/tuition.dart';
+import 'package:tutorsplus/models/user.dart';
+import 'package:tutorsplus/screens/search-view/selected-tutor.dart';
+import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/common.dart';
+import 'package:tutorsplus/shared/transition-animations.dart';
 
 class TuitionTile extends StatelessWidget {
-  TuitionTile(
-      {this.tuition,
-      this.premiumTuitionsCount,
-      this.currentIndex,
-      this.selectedTuitionIndex});
+
   final Tuition tuition;
   final int premiumTuitionsCount;
   final int currentIndex;
   final int selectedTuitionIndex;
+  final UserData userData;
+  final bool tuitionIsFavourited;
+  final Function rebuildSearch;
 
-  void _addToFavouriteTuitions() {
-    print('TODO');
+  TuitionTile({
+    this.tuition,
+    this.premiumTuitionsCount,
+    this.currentIndex,
+    this.selectedTuitionIndex,
+    this.userData,
+    this.tuitionIsFavourited,
+    this.rebuildSearch,
+  });
 
-    // add the tuition object to the list of favourited tuitions for this
-    // user in firebase
+ void _alertDialogTuitionActions({BuildContext context}) {
+
+    var alert = AlertDialog(
+      title: Text(tuition.name,
+        style: TextStyle(color: tuition.isPremium ? purplePlus : orangePlus, fontWeight: FontWeight.bold, fontSize: 20),
+      ),
+      backgroundColor: whitePlus,
+      content: RichText(
+        text: TextSpan(
+          style: TextStyle(fontSize: 16, color: greyPlus, fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(text: "Description: \n"),
+            TextSpan(text: tuition.description,
+              style: TextStyle(fontSize: 14)
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        GestureDetector(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon(tuitionIsFavourited? Icons.favorite : Icons.favorite_border,
+              color: Colors.red,
+            ),
+          ),
+          onTap: () async {
+            if(tuitionIsFavourited){
+              Navigator.pop(context);
+              await DatabaseService(uid: userData.uid).removeFavourite(tuition);
+              rebuildSearch();
+            }else{
+              Navigator.pop(context);
+              await DatabaseService(uid: userData.uid).addFavourite(tuition);
+              rebuildSearch();
+            } 
+          },
+        ),
+        GestureDetector(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon( Icons.person ),
+          ),
+          onTap: (){
+            Navigator.pop(context);
+            Navigator.push(context, ScaleToRoute(page: SelectedTutorProfile(tutorRef: tuition.tutorRef)));
+          },
+        ),
+      ],
+      elevation: 20.0,
+    );
+
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) => alert,
+      barrierDismissible: true,
+    );
   }
 
-  void _zoomOnMarker() {
-    print('TODO');
+  Widget _tuitionCard(context) {
 
-    // somehow this method must pass the tuition object to the main widget
-    // which is FUCKING impossible
-  }
-
-  Widget _tuitionCard(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(10),
-              topLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-              topRight: Radius.circular(10)),
-          side: tuition.isPremium
-              ? BorderSide(
-                  color: purplePlus,
-                  width: currentIndex == selectedTuitionIndex ? 5.0 : 0)
-              : BorderSide(
-                  color: amberPlus,
-                  width: currentIndex == selectedTuitionIndex ? 5.0 : 0)),
+        borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(10),
+            topLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10),
+            topRight: Radius.circular(10)
+        ),
+        side: tuition.isPremium
+            ? BorderSide(
+                color: purplePlus,
+                width: currentIndex == selectedTuitionIndex ? 5.0 : 0)
+            : BorderSide(
+                color: amberPlus,
+                width: currentIndex == selectedTuitionIndex ? 5.0 : 0)
+        ),
       margin: EdgeInsets.fromLTRB(10.0, 6.0, 10.0, 0.0),
       elevation: 3,
-      // color: tuition.premium ? purplePlus : orangePlus,
       color: whitePlus,
       child: ListTile(
         leading: CircleAvatar(
@@ -52,32 +112,20 @@ class TuitionTile extends StatelessWidget {
           backgroundColor: Colors.white,
           backgroundImage: AssetImage('assets/book.png'),
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.pin_drop),
-              iconSize: 18,
-              color: greyPlus,
-              onPressed: _zoomOnMarker,
-            ),
-            IconButton(
-              icon: Icon(Icons.favorite_border),
-              iconSize: 18,
-              color: greyPlus,
-              onPressed: _addToFavouriteTuitions,
-            ),
-          ],
+        trailing: IconButton(
+          icon: Icon(Icons.info),
+          iconSize: 25,
+          color: greyPlus,
+          onPressed: () => _alertDialogTuitionActions(context: context),
         ),
         title: Text(tuition.name,
             style: !tuition.isPremium
                 ? TextStyle(color: amberPlus)
                 : TextStyle(color: purplePlus)),
         subtitle: Text(
-          'Name: ${tuition.tutor}\nSubject: ${tuition.category}\nLevel: ${tuition.level}',
+          'Subject: ${tuition.category}\nLevel: ${tuition.level}',
           style: TextStyle(color: greyPlus),
         ),
-        //subtitle: Text('Tutor: ${tuition.tutorName}\nMathematics • MATSEC A Level'),
         isThreeLine: true,
       ),
     );
@@ -163,19 +211,18 @@ class TuitionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(currentIndex);
-    return Padding(
-        padding: currentIndex!=1 ? const EdgeInsets.only(top: 8.0) : const EdgeInsets.only(top: 0.0),
-        child: Column(
-          children: <Widget>[
-            currentIndex == 0 && premiumTuitionsCount != 0
-                ? _premiumDivider(context)
-                : Container(),
-            currentIndex == premiumTuitionsCount
-                ? _freemiumDivider(context)
-                : Container(),
-            _tuitionCard(context),
-          ],
-        ));
+    return Column(
+      children: <Widget>[
+        currentIndex == 0 && premiumTuitionsCount != 0
+            ? _premiumDivider(context)
+            : Container(),
+        currentIndex == premiumTuitionsCount
+            ? _freemiumDivider(context)
+            : Container(),
+        _tuitionCard(context),
+      ],
+    );
   }
 }
+
+

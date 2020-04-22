@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tutorsplus/models/user.dart';
+import 'package:tutorsplus/screens/search-view/selected-tutor.dart';
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/common.dart';
 import 'package:tutorsplus/shared/loading.dart';
+import 'package:tutorsplus/shared/transition-animations.dart';
 
 class UserFavourites extends StatefulWidget {
 
@@ -80,7 +82,8 @@ class _UserFavouritesState extends State<UserFavourites> {
         appBar: AppBar(
           backgroundColor: amberPlus,
           title: Text("Your Favourites"),
-          elevation: 0.0,
+          elevation: 4.0,
+          centerTitle: true,
         ),
 
         body: Container(
@@ -150,7 +153,7 @@ class FavouriteTile extends StatelessWidget {
   FavouriteTile({ this.favourite, this.toggleFavourite, this.favouritesToRemove });
 
   void _alertDialogTuitionInfo(BuildContext context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium, tuitionIsOnline) {
-
+    
     var alert = AlertDialog(
       title: Text(tuitionName,
         style: TextStyle(color: greyPlus, fontWeight: FontWeight.bold, fontSize: 20),
@@ -163,8 +166,8 @@ class FavouriteTile extends StatelessWidget {
             TextSpan(text: "Tutor: "),
             TextSpan(text: tuitionTutor, 
               style: tuitionIsPremium ? TextStyle(color: purplePlus) : TextStyle(color: orangePlus) ),
-            TextSpan(text: "\n"),
-            TextSpan(text: tuitionDescription,
+            TextSpan(text: "\n\n"),
+            TextSpan(text: tuitionDescription ?? "No description to show",
               style: TextStyle(fontSize: 14)
             ),
           ],
@@ -174,7 +177,10 @@ class FavouriteTile extends StatelessWidget {
         Icon( tuitionIsOnline? Icons.headset_mic : Icons.headset_off),
         IconButton(
           icon: Icon(Icons.person_pin), 
-          onPressed: () => Navigator.pop(context)
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(context, ScaleToRoute(page: SelectedTutorProfile(tutorRef: favourite['tuition_tutorRef'])));
+          }
         ),
       ],
       elevation: 20.0,
@@ -211,18 +217,21 @@ class FavouriteTile extends StatelessWidget {
           title: Text(tuitionName),
           subtitle: Text('Subject: '+ tuitionCategory +'\nLevel: '+ tuitionLevel),
           trailing: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               GestureDetector(
                 child: Icon(
                   !favouritesToRemove.contains(tuitionRef.path) ? Icons.favorite : Icons.favorite_border, 
                   color: Colors.red,
+                  size: 25
                 ),
                 onTap: (){
                   toggleFavourite(tuitionRef.path);
                 },
               ),
               GestureDetector(
-                child: Icon(Icons.info,),
+                child: Icon(Icons.info,size: 25,),
                 onTap: (){
                   _alertDialogTuitionInfo(context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium, tuitionIsOnline);
                 },

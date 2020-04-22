@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tutorsplus/models/user.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tutorsplus/models/tuition.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tutorsplus/screens/home-view/tuition_tile.dart';
 import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/loading.dart';
@@ -41,50 +38,9 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void populateTuitions() {
-    Firestore.instance.collection('tuition').getDocuments().then((docs) {
-      if (docs.documents.isNotEmpty) {
-        setState(() {
-          tuitionsToggle = true;
-        });
-        for (int i = 0; i < docs.documents.length; ++i) {
-          String tuitionId = LatLng(
-                  docs.documents[i].data['tuition_geopoint'].latitude,
-                  docs.documents[i].data['tuition_geopoint'].longitude)
-              .toString();
-          Tuition newTuition = new Tuition(
-            // tuitionId,
-            // docs.documents[i].data['tuition_title'],
-            // docs.documents[i].data['tutor_name'],
-            // docs.documents[i].data['tuition_category'],
-            // docs.documents[i].data['tuition_level'],
-            // docs.documents[i].data['isPremium'],
-            // docs.documents[i].data['locality'],
-            // docs.documents[i].data['tuition_geopoint'].longitude,
-            // docs.documents[i].data['tuition_geopoint'].latitude);
-            id: tuitionId,
-            isPremium: docs.documents[i].data['tuition_isPremium'],
-            isOnline: docs.documents[i].data['tuition_isOnline'],
-            category: docs.documents[i].data['tuition_category'],
-            level: docs.documents[i].data['tuition_level'],
-            name: docs.documents[i].data['tuition_name'],
-            tutor: docs.documents[i].data['tuition_tutor'],
-            description: docs.documents[i].data['description'],
-            locality: docs.documents[i].data['tuition_locality'],
-            tutorRef: docs.documents[i].data['tuition_tutorRef'],
-            latitude: docs.documents[i].data['tuition_geopoint'].latitude,
-            longitude: docs.documents[i].data['tuition_geopoint'].longitude,
-          );
-          tuitions.add(newTuition);
-        }
-      }
-    });
-  }
-
   void initState() {
     super.initState();
     _timeDayCheck();
-    populateTuitions();
   }
 
   Widget _carouselSlider(BuildContext context) {

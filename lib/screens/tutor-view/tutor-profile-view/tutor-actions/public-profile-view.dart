@@ -44,6 +44,7 @@ class _PublicTutorProfileState extends State<PublicTutorProfile> {
                     Align(
                       alignment: Alignment.center,
                       child:Container(
+                        margin: EdgeInsets.fromLTRB(0,30,0,0),
                         width: 160,
                         height: 160,
                         decoration: BoxDecoration(
@@ -52,6 +53,20 @@ class _PublicTutorProfileState extends State<PublicTutorProfile> {
                           image: DecorationImage(
                             fit: BoxFit.fill,
                             image: AssetImage('assets/tutor.png')
+                          ),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child:Container(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        width: double.infinity,
+                        child: Text(tutorData.fname+" "+tutorData.lname,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: whitePlus,
+                            fontSize: 20
                           ),
                         ),
                       ),
@@ -71,7 +86,7 @@ class _PublicTutorProfileState extends State<PublicTutorProfile> {
                       ),
                     ),
                     Align(
-                      alignment: Alignment.bottomRight,
+                      alignment: Alignment.bottomCenter,
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         child: SmoothStarRating(
@@ -439,34 +454,34 @@ Widget _buildReviewsWidget(tutorData){
 
 void _alertDialogTuitionInfo({BuildContext context, tuitionName, tuitionDescription, tuitionIsPremium, tuitionIsOnline}) {
 
-    var alert = AlertDialog(
-      title: Text(tuitionName,
-        style: TextStyle(color: tuitionIsPremium ? purplePlus : orangePlus, fontWeight: FontWeight.bold, fontSize: 20),
+  var alert = AlertDialog(
+    title: Text(tuitionName,
+      style: TextStyle(color: tuitionIsPremium ? purplePlus : orangePlus, fontWeight: FontWeight.bold, fontSize: 20),
+    ),
+    backgroundColor: whitePlus,
+    content: RichText(
+      text: TextSpan(
+        style: TextStyle(fontSize: 16, color: greyPlus, fontWeight: FontWeight.bold),
+        children: [
+          TextSpan(text: "Description: \n"),
+          TextSpan(text: tuitionDescription,
+            style: TextStyle(fontSize: 14)
+          ),
+        ],
       ),
-      backgroundColor: whitePlus,
-      content: RichText(
-        text: TextSpan(
-          style: TextStyle(fontSize: 16, color: greyPlus, fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(text: "Description: \n"),
-            TextSpan(text: tuitionDescription,
-              style: TextStyle(fontSize: 14)
-            ),
-          ],
-        ),
+    ),
+    actions: <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Icon( tuitionIsOnline? Icons.headset_mic : Icons.headset_off,),
       ),
-      actions: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Icon( tuitionIsOnline? Icons.headset_mic : Icons.headset_off,),
-        ),
-      ],
-      elevation: 20.0,
-    );
+    ],
+    elevation: 20.0,
+  );
 
-    showDialog(
-      context: context, 
-      builder: (BuildContext context) => alert,
-      barrierDismissible: true,
-    );
-  }
+  showDialog(
+    context: context, 
+    builder: (BuildContext context) => alert,
+    barrierDismissible: true,
+  );
+}

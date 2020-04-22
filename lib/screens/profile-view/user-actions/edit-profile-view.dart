@@ -38,10 +38,6 @@ class _EditProfileState extends State<EditUserProfile> {
     screenWidth = size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: blackPlus,
-        elevation: 0.0,
-      ),
 
       body: Container(
         height: double.infinity,
@@ -116,26 +112,36 @@ class _EditProfileState extends State<EditUserProfile> {
   }
 
   Widget _buildFirstNameCont(userFname){
-    return FormBuilderTextField( 
-      attribute: 'fname_field',
-      initialValue: userFname,
-      maxLines: 1,
-      decoration: textInputDecoration.copyWith(labelText: 'First Name'),
-      validators: [
-        FormBuilderValidators.required(errorText: "A first name is required")
-      ],
+    return Card(
+      child: FormBuilderTextField( 
+        attribute: 'fname_field',
+        initialValue: userFname,
+        maxLines: 1,
+        decoration: InputDecoration(
+        hintText: 'First Name',
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
+        validators: [
+          FormBuilderValidators.required(errorText: "A first name is required")
+        ],
+      ),
     );
   }
 
   Widget _buildLastNameCont(userLname){
-    return FormBuilderTextField( 
-      attribute: 'lname_field',
-      initialValue: userLname,
-      maxLines: 1,
-      decoration: textInputDecoration.copyWith(labelText: 'Last Name'),
-      validators: [
-        FormBuilderValidators.required(errorText: "A last name is required")
-      ],
+    return Card(
+      child: FormBuilderTextField( 
+        attribute: 'lname_field',
+        initialValue: userLname,
+        maxLines: 1,
+        decoration: InputDecoration(
+        hintText: 'Last Name',
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
+        validators: [
+          FormBuilderValidators.required(errorText: "A last name is required")
+        ],
+      ),
     );
   }
 
@@ -150,16 +156,17 @@ class _EditProfileState extends State<EditUserProfile> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text(
-          "Your Interests",
-          style: TextStyle(
-          fontFamily: 'OpenSans',
-          fontSize: 20.0,
-          fontWeight: FontWeight.bold,
-          )
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            "Your Interests",
+            style: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+            )
+          ),
         ),
-
-        SizedBox(height: 20),
 
         Tags(
           key:_tagStateKey,

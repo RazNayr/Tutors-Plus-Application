@@ -32,6 +32,7 @@ class _ReviewTutorState extends State<ReviewTutor> {
         width: double.infinity,
         height: double.infinity,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FormBuilder(
               key: _formBuilderKey,
@@ -127,9 +128,10 @@ class _ReviewTutorState extends State<ReviewTutor> {
                       setState(() {
                         _loading = true;
                         review = _formBuilderKey.currentState.value['review_field'];
+
+                        print(review);
                       });
 
-                      await new Future.delayed(const Duration(seconds : 2));
                       await DatabaseService(uid: widget.user.uid).addReview(widget.tutorData, review, rating);
                       Navigator.pop(context);
                     }

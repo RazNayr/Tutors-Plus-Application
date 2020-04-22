@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tutorsplus/models/user.dart';
+import 'package:tutorsplus/screens/search-view/selected-tutor.dart';
+import 'package:tutorsplus/services/database.dart';
 import 'package:tutorsplus/shared/common.dart';
+import 'package:tutorsplus/shared/transition-animations.dart';
 
 class UserLessons extends StatefulWidget {
 
@@ -25,13 +28,14 @@ class _UserLessonsState extends State<UserLessons> {
         appBar: AppBar(
           backgroundColor: amberPlus,
           title: Text("Your Lessons"),
-          elevation: 0.0,
+          elevation: 4.0,
+          centerTitle: true,
         ),
 
         body: ListView.builder(
           itemCount: lessons.length,
           itemBuilder: (context, index) {
-            return LessonTile(lesson: lessons[index]);
+            return LessonTile(lesson: lessons[index], userData: userData);
           }
         ),
   
@@ -79,10 +83,11 @@ class _UserLessonsState extends State<UserLessons> {
 class LessonTile extends StatelessWidget {
 
   final Map lesson;
-  LessonTile({ this.lesson });
+  final UserData userData;
+  LessonTile({ this.lesson, this.userData });
 
   
-  void _alertDialogTuitionInfo(BuildContext context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium) {
+  void _alertDialogTuitionInfo(BuildContext context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium, tutorRef) {
 
     var alert = AlertDialog(
       title: Text(tuitionName,
@@ -96,7 +101,7 @@ class LessonTile extends StatelessWidget {
             TextSpan(text: "Tutor: "),
             TextSpan(text: tuitionTutor, 
               style: tuitionIsPremium ? TextStyle(color: purplePlus) : TextStyle(color: orangePlus) ),
-            TextSpan(text: "\n"),
+            TextSpan(text: "\n\n"),
             TextSpan(text: tuitionDescription,
               style: TextStyle(fontSize: 14)
             ),
@@ -104,9 +109,28 @@ class LessonTile extends StatelessWidget {
         ),
       ),
       actions: <Widget>[
+        GestureDetector(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Text("Leave",
+                style: TextStyle(
+                  color: amberPlus
+                )
+              ),
+            ),
+          ),
+          onTap: () {
+            Navigator.pop(context);
+            _alertDialogConfirmLeave(context: context);
+          },
+        ),
         IconButton(
           icon: Icon(Icons.person_pin), 
-          onPressed: () => Navigator.pop(context)
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(context, ScaleToRoute(page: SelectedTutorProfile(tutorRef: tutorRef)));
+          }
         ),
       ],
       elevation: 20.0,
@@ -119,6 +143,60 @@ class LessonTile extends StatelessWidget {
     );
   }
 
+  void _alertDialogConfirmLeave({BuildContext context}) {
+
+    final tuitionName = lesson['tuition_name'];
+    final tutorRef = lesson['tuition_tutorRef'];
+
+    var alert = AlertDialog(
+      backgroundColor: whitePlus,
+      content: Text("Are you sure you want to stop in the selected tuition?",
+        style: TextStyle(fontSize: 16, color: greyPlus, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        GestureDetector(
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Text("No",
+              style: TextStyle(
+                color: greyPlus,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ), 
+            )
+          ),
+          onTap: (){
+            Navigator.pop(context);
+          },
+        ),
+        GestureDetector(
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Text("Yes",
+              style: TextStyle(
+                color: yellowPlus,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ), 
+            )
+          ),
+          onTap: (){
+            Navigator.pop(context);
+            DatabaseService(uid:userData.uid).cancelLesson(tuitionName, tutorRef);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+      elevation: 20.0,
+  );
+
+  showDialog(
+    context: context, 
+    builder: (BuildContext context) => alert,
+    barrierDismissible: false,
+  );
+}
+
   @override
   Widget build(BuildContext context) {
 
@@ -127,7 +205,7 @@ class LessonTile extends StatelessWidget {
     final tuitionLevel = lesson['tuition_level'];
     final tuitionTutor = lesson['tuition_tutor'];
     final tuitionDescription = lesson['tuition_description'];
-    //final tutorRef = lesson['tuition_tutorRef'];
+    final tutorRef = lesson['tuition_tutorRef'];
     final tuitionIsPremium = lesson['tuition_isPremium'];
 
 
@@ -143,11 +221,17 @@ class LessonTile extends StatelessWidget {
           ),
           title: Text(tuitionName),
           subtitle: Text('Subject: '+ tuitionCategory +'\nLevel: '+ tuitionLevel),
-          trailing: GestureDetector(
-            child: Icon(Icons.info,),
-            onTap: (){
-              _alertDialogTuitionInfo(context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium);
-            },
+          trailing: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              GestureDetector(
+                child: Icon(Icons.info, size: 30),
+                onTap: (){
+                  _alertDialogTuitionInfo(context, tuitionName, tuitionTutor, tuitionDescription, tuitionIsPremium, tutorRef);
+                },
+              ),
+            ],
           ),
           isThreeLine: true
         ),

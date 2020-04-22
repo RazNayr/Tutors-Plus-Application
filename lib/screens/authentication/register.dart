@@ -45,7 +45,7 @@ class _RegisterState extends State<Register> {
       backgroundColor: whitePlus,
 
       appBar: AppBar(
-        backgroundColor: blackPlus,
+        backgroundColor: orangePlus,
         elevation: 0.0,
         title: Text('Sign Up to Tutors+'),
         actions: <Widget>[
@@ -73,78 +73,116 @@ class _RegisterState extends State<Register> {
                   children: <Widget>[
                     
                     //Email Text Field
-                    FormBuilderTextField( 
-                      attribute: 'email_field',
-                      maxLines: 1,
-                      decoration: textInputDecoration.copyWith(hintText: 'Email', suffixIcon: Icon(Icons.email)),
-                      validators: [
-                        FormBuilderValidators.email(errorText: "Valid email address required"),
-                        FormBuilderValidators.required(errorText: "Valid email address required")
-                      ],
+                    Card(
+                      child: FormBuilderTextField( 
+                        attribute: 'email_field',
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          border: InputBorder.none,
+                          suffixIcon: Icon(Icons.email),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                        ),
+                        validators: [
+                          FormBuilderValidators.email(errorText: "Valid email address required"),
+                          FormBuilderValidators.required(errorText: "Valid email address required")
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: 20),
 
                     //Password Text Field
-                    FormBuilderTextField( 
-                      attribute: 'pass_field',
-                      maxLines: 1,
-                      decoration: textInputDecoration.copyWith(hintText: 'password', suffixIcon: IconButton(icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility), onPressed: _toggle)),
-                      obscureText: _obscurePassword,
-                      validators: [
-                        FormBuilderValidators.required(errorText: "Password required"),
-                      ],
+                    Card(
+                      child: FormBuilderTextField( 
+                        attribute: 'pass_field',
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                          labelText: 'password',
+                          border: InputBorder.none,
+                          suffixIcon: IconButton(icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility), onPressed: _toggle),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                        ),
+                        obscureText: _obscurePassword,
+                        validators: [
+                          FormBuilderValidators.required(errorText: "Password required"),
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: 20),
 
                     //First Name Text Field
-                    FormBuilderTextField( 
-                      attribute: 'fname_field',
-                      maxLines: 1,
-                      decoration: textInputDecoration.copyWith(labelText: 'First Name'),
-                      validators: [
-                        FormBuilderValidators.required(errorText: "First name required")
-                      ],
+                    Card(
+                      child: FormBuilderTextField( 
+                        attribute: 'fname_field',
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                          labelText: 'First Name',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                        ),
+                        validators: [
+                          FormBuilderValidators.required(errorText: "First name required")
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: 20),
 
                     //First Name Text Field
-                    FormBuilderTextField( 
-                      attribute: 'lname_field',
-                      maxLines: 1,
-                      decoration: textInputDecoration.copyWith(labelText: 'Last Name'),
-                      validators: [
-                        FormBuilderValidators.required(errorText: "Last name required")
-                      ],
+                    Card(
+                      child: FormBuilderTextField( 
+                        attribute: 'lname_field',
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                          labelText: 'Last Name',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                        ),
+                        validators: [
+                          FormBuilderValidators.required(errorText: "Last name required")
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: 20),
 
                     //User DOB Field
-                    FormBuilderDateTimePicker(
-                      attribute: 'dob_field',
-                      inputType: InputType.date,
-                      format: DateFormat("dd-MM-yyyy"),
-                      decoration: textInputDecoration.copyWith(labelText: 'Date of birth'),
-                      validators: [
-                        FormBuilderValidators.required(errorText: "Date of birth required")
-                      ],
+                    Card(
+                      child: FormBuilderDateTimePicker(
+                        attribute: 'dob_field',
+                        inputType: InputType.date,
+                        format: DateFormat("dd-MM-yyyy"),
+                        decoration: InputDecoration(
+                          hintText: 'Date Of Birth',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                        ),
+                        validators: [
+                          FormBuilderValidators.required(errorText: "Date of birth required")
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: 20),
 
                     //User Gender Field
-                    FormBuilderRadio(
-                      attribute: "gender_field",
-                      decoration: textInputDecoration.copyWith(labelText: 'Gender'),
-                      validators: [
-                        FormBuilderValidators.required(errorText: "Gender required")
-                      ],
-                      options: ["Male","Female","Other",]
-                          .map((gender) => FormBuilderFieldOption(value: gender))
-                          .toList(growable: false),
+                    Card(
+                      child: FormBuilderRadio(
+                        attribute: "gender_field",
+                        decoration: InputDecoration(
+                          labelText: 'Gender',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20)
+                        ),
+                        validators: [
+                          FormBuilderValidators.required(errorText: "Gender required")
+                        ],
+                        options: ["Male","Female","Other",]
+                            .map((gender) => FormBuilderFieldOption(value: gender))
+                            .toList(growable: false),
+                      ),
                     ),
 
                     SizedBox(height: 20),

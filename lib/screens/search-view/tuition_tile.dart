@@ -50,7 +50,7 @@ class TuitionTile extends StatelessWidget {
         leading: CircleAvatar(
           radius: 25.0,
           backgroundColor: Colors.white,
-          child: Text('T+'),
+          backgroundImage: AssetImage('assets/book.png'),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -74,7 +74,7 @@ class TuitionTile extends StatelessWidget {
                 ? TextStyle(color: amberPlus)
                 : TextStyle(color: purplePlus)),
         subtitle: Text(
-          '${tuition.tutor}\n${tuition.category} • ${tuition.level}',
+          'Name: ${tuition.tutor}\nSubject: ${tuition.category}\nLevel: ${tuition.level}',
           style: TextStyle(color: greyPlus),
         ),
         //subtitle: Text('Tutor: ${tuition.tutorName}\nMathematics • MATSEC A Level'),
@@ -163,8 +163,9 @@ class TuitionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(currentIndex);
     return Padding(
-        padding: EdgeInsets.only(top: 8.0),
+        padding: currentIndex!=1 ? const EdgeInsets.only(top: 8.0) : const EdgeInsets.only(top: 0.0),
         child: Column(
           children: <Widget>[
             currentIndex == 0 && premiumTuitionsCount != 0

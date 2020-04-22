@@ -331,9 +331,9 @@ class _AddTuitionState extends State<AddTuition> {
                                       horizontal: 20, vertical: 10)),
                               items: [
                                 'Any',
-                                'O\' level',
+                                'O\' Level',
                                 'Intermediate Level',
-                                'A\' level'
+                                'A\' Level'
                               ]
                                   .map((level) => DropdownMenuItem(
                                       value: level,

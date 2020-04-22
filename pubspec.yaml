@@ -44,6 +44,8 @@ dependencies:
   flutter_xlider: ^3.2.0
   sliding_up_panel: ^1.0.2
 
+  carousel_slider: ^2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

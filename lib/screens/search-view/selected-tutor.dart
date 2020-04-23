@@ -51,7 +51,7 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
 
   Set<Marker> _getTuitionMarkers(TutorData tutorData) {
     for (int i = 0; i < tutorData.tuition.length; ++i) {
-      _addMarker(tutorData.tuition[i]['tuition_geopoint'].latitude, tutorData.tuition[i]['tuition_geopoint'].longitude, tutorData.tuition[i]['tuition_category'], tutorData.tuition[i]['tuition_level'], tutorData.tuition[i]['tuition_isPremium']);
+      _addMarker(tutorData.tuition[i]['tuition_geopoint'].latitude, tutorData.tuition[i]['tuition_geopoint'].longitude, tutorData.tuition[i]['tuition_category'], tutorData.tuition[i]['tuition_level'], tutorData.isPremium);
     }
 
     return Set<Marker>.of(markers.values);
@@ -59,6 +59,8 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
 
   void _addMarker(double lat, double long, String categ, String level, bool isPremium) {
     final MarkerId markerId = MarkerId(LatLng(lat,long).toString());
+
+    print(isPremium);
 
     final Marker marker = Marker(
       markerId: markerId,

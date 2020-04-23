@@ -640,7 +640,7 @@ void _alertDialogTuitionInfo({BuildContext context, tuitionName, tuitionDescript
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Text("Enrol",
+              child: Text("Enroll",
                 style: TextStyle(
                   color: amberPlus
                 )

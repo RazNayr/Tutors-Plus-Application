@@ -59,10 +59,7 @@ class _UserFavouritesState extends State<UserFavourites> {
               _loading = true;
             });
             await DatabaseService(uid: uid).removeUserFavourites(_favouritesToRemove);
-            setState(() {
-              _favouritesToRemove.clear();
-              _loading = false;
-            });
+            Navigator.pop(context);
           }
         ),
       );

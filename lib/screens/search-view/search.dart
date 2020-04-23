@@ -203,8 +203,6 @@ class _SearchState extends State<Search> {
 
     setState(() => _selectedTuitionIndex = whichTile);
 
-    print('tile to scroll to is: ' + whichTile.toString());
-
     var maxScrollValue = _scrollController.position.maxScrollExtent;
     var divisor = (maxScrollValue / tuitionsOnMap.length) + 20;
     var scrollToValue = whichTile * divisor;

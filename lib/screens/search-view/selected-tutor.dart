@@ -1,5 +1,11 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:tutorsplus/models/tutor.dart';
@@ -24,6 +30,56 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
 
   double screenWidth;
   double screenHeight;
+
+  Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController mapController;
+  String _mapStyle;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+
+  void initState() {
+    super.initState();
+    rootBundle.loadString('assets/map_style.txt').then((string) {
+      _mapStyle = string;
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _controller.complete(controller);
+    mapController = controller;
+    mapController.setMapStyle(_mapStyle);
+  }
+
+  Set<Marker> _getTuitionMarkers(TutorData tutorData) {
+    for (int i = 0; i < tutorData.tuition.length; ++i) {
+      _addMarker(tutorData.tuition[i]['tuition_geopoint'].latitude, tutorData.tuition[i]['tuition_geopoint'].longitude, tutorData.tuition[i]['tuition_category'], tutorData.tuition[i]['tuition_level'], tutorData.tuition[i]['tuition_isPremium']);
+    }
+
+    return Set<Marker>.of(markers.values);
+  }
+
+  void _addMarker(double lat, double long, String categ, String level, bool isPremium) {
+    final MarkerId markerId = MarkerId(LatLng(lat,long).toString());
+
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: LatLng(lat, long),
+      infoWindow: InfoWindow(title: categ, snippet: level),
+      icon: isPremium
+          ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
+          : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      draggable: false,
+      onTap: () => zoomOnMarker(lat, long),
+    );
+
+    markers[markerId] = marker;
+  }
+
+  Future zoomOnMarker(double lat, double long) async {
+    GoogleMapController controller = await _controller.future;
+    double _focusZoom = 15.0;
+    controller.animateCamera(CameraUpdate.newLatLngZoom(
+        LatLng(lat, long), _focusZoom));
+  }
 
   void rebuildWidget(){
     setState(() {});
@@ -218,7 +274,30 @@ class _SelectedTutorProfileState extends State<SelectedTutorProfile> {
                           Expanded(
                             child: Card(
                               child: Container(
+                                height: MediaQuery.of(context).size.height / 3,
                                 width: double.infinity,
+                                child: GoogleMap(
+                                  gestureRecognizers:
+                                      <Factory<OneSequenceGestureRecognizer>>[
+                                    new Factory<OneSequenceGestureRecognizer>(
+                                      () => new EagerGestureRecognizer(),
+                                    ),
+                                  ].toSet(),
+                                  onMapCreated: _onMapCreated,
+                                  initialCameraPosition: CameraPosition(
+                                    target: LatLng(35.913523, 14.401827),
+                                    zoom: 10,
+                                  ),
+                                  minMaxZoomPreference:
+                                      MinMaxZoomPreference(10.0, 20.0),
+                                  cameraTargetBounds:
+                                      CameraTargetBounds(LatLngBounds(
+                                    southwest: LatLng(35.630512, 14.075246),
+                                    northeast: LatLng(36.202174, 14.809208),
+                                  )),
+                                  myLocationEnabled: true,
+                                  markers: _getTuitionMarkers(tutorData),
+                                ),
                               ),
                             ),
                           )

@@ -14,19 +14,6 @@ class DatabaseService {
   final CollectionReference tutorCollection = Firestore.instance.collection('tutors');
   final CollectionReference tuitionCollection = Firestore.instance.collection('tuition');
 
-  //Update user data that is able to be modified
-  // Future<void> updateUserData(Map<String, dynamic> userData) async {
-  //   return await userCollection.document(uid).updateData({
-  //     'user_fname': userData['fname'] as String,
-  //     'user_lname': userData['lname'] as String,
-  //     'user_dob': userData['date'] as DateTime,
-  //     'user_isTutor': userData['isTutor'] as bool,
-  //     'user_interests': userData['interests'] as List<String>,
-  //     'user_favourites': userData['favs'] as List<Map>,
-  //     'user_classes': userData['classes'] as List<Map>,
-  //   });
-  // }
-
   //Initialise primary user data when registered
   Future<void> initialiseUserData(Map<String, dynamic> userData) async {
     return await userCollection.document(uid).setData({
@@ -36,6 +23,7 @@ class DatabaseService {
       'user_gender': userData['gender'] as String,
       'user_isTutor': false,
       'user_interests': new List<String>(),
+      'user_search_history': new List<String>(),
       'user_favourites': new List<Map>(),
       'user_lessons': new List<Map>(),
     });
@@ -47,6 +35,31 @@ class DatabaseService {
       'user_lname': lname,
       'user_interests': interests,
     });
+  }
+
+  Future<void> addUserSearch(String searchCategory) async {
+
+    List<String> _modifiedUserSearchHistoryList = List();
+    final DocumentReference userDoc = userCollection.document(uid);
+    final searchLimit = 5;
+
+    _modifiedUserSearchHistoryList = await userDoc.get().then((onValue){
+      return onValue['user_search_history'].cast<String>();
+    });
+
+    if(!_modifiedUserSearchHistoryList.contains(searchCategory)){
+      _modifiedUserSearchHistoryList.add(searchCategory);
+
+      if(_modifiedUserSearchHistoryList.length > searchLimit){
+        _modifiedUserSearchHistoryList.removeAt(0);
+      }
+
+      return await userDoc.updateData({
+        'user_search_history': _modifiedUserSearchHistoryList,
+      });
+    }else{
+      return null;
+    }
   }
 
   Future<void> removeUserFavourites(List favouritesToRemove) async {

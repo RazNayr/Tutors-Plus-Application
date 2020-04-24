@@ -10,7 +10,6 @@ import 'package:tutorsplus/models/tutor.dart';
 import 'package:tutorsplus/shared/common.dart';
 
 import '../../../../models/tutor.dart';
-import '../../../../models/tutor.dart';
 
 class PublicTutorProfile extends StatefulWidget {
   final TutorData tutorData;

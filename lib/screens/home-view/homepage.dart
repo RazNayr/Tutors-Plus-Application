@@ -175,36 +175,36 @@ class _HomeState extends State<Home> {
   }
 
   Widget _loadNewTuition(UserData userData, List<Tuition> tuitionList) {
-    List<String> userInterests = userData.interests;
-    bool interestedTuition = false;
+    List<String> userInterests = userData.interests ?? new List();
+    List<String> userSearchHistory = userData.searchHistory ?? new List();
+    List<Tuition> customTuitionToShow = new List();
 
-    for (int i = 0; i < tuitionList.length; ++i) {
-      if (userInterests.contains(tuitionList[i].category)) {
-        interestedTuition = true;
-        break;
+    tuitionList.forEach((tuition){
+      if(userInterests.contains(tuition.category) || userSearchHistory.contains(tuition.category)){
+        customTuitionToShow.add(tuition);
       }
-    }
+    });
 
-    return ListView.builder(
+    if(customTuitionToShow.length > 0){
+      return ListView.builder(
         padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-        itemCount: interestedTuition ? tuitionList.length : (tuitionList.length<5 ? tuitionList.length : 5),
-        itemBuilder: interestedTuition
-            ? (context, index) {
-                Tuition tuition = tuitionList[index];
-                if (userInterests.contains(tuition.category)) {
-                  interestedTuition = true;
-                  return TuitionTile(
-                    tuition: tuition,
-                    index: index,
-                  );
-                } else {
-                  return SizedBox();
-                }
-              }
-            : (context, index) {
-                Tuition tuition = tuitionList[index];
-                return TuitionTile(tuition: tuition, index: index);
-              });
+        itemCount: customTuitionToShow.length,
+        itemBuilder: (context, index) {
+          Tuition tuition = customTuitionToShow[index];
+          return TuitionTile(tuition: tuition, index: index);
+        }
+      );
+    }else{
+      return ListView.builder(
+        padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+        itemCount: tuitionList.length<5 ? tuitionList.length : 5,
+        itemBuilder: (context, index) {
+          Tuition tuition = tuitionList[index];
+          return TuitionTile(tuition: tuition, index: index);
+        }
+      );
+    }
+    
   }
 
   @override

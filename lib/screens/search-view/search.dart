@@ -602,15 +602,13 @@ class _SearchState extends State<Search> {
     _filterOnTuitions['category'] = _filter['category'];
     _filterOnTuitions['locality'] = _filter['locality'];
 
-    _filterOnTuitions['level'] == 'Any'
-        ? _filterOnTuitions['level'] = null
-        : null;
-    _filterOnTuitions['category'] == 'Any'
-        ? _filterOnTuitions['category'] = null
-        : null;
-    _filterOnTuitions['locality'] == 'Any'
-        ? _filterOnTuitions['locality'] = null
-        : null;
+    if(_filterOnTuitions['level'] == 'Any') _filterOnTuitions['level'] = null;
+    if(_filterOnTuitions['category'] == 'Any') _filterOnTuitions['category'] = null;
+    if(_filterOnTuitions['locality'] == 'Any') _filterOnTuitions['locality'] = null;
+    
+    if(_filterOnTuitions['category'] != null){
+      DatabaseService(uid: widget.userData.uid).addUserSearch(_filterOnTuitions['category']);
+    }
 
     _radiusButtonVisibilityChange(_filter['radius']);
     _toggleLocalityFormVisibility(_filter['localityToggle']);

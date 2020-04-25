@@ -15,10 +15,11 @@ class UserData {
   final Timestamp dob;
   final bool isTutor;
   final List<String> interests;
-  final Map<String,List<String>> searchHistory;
+  final List<String> searchCategories;
+  final List<String> searchLevels;
   final List<Map> favourites;
   final List<Map> lessons;
 
-  UserData({this.uid, this.fname, this.lname, this.dob, this.isTutor, this.interests, this.searchHistory, this.favourites, this.lessons});
+  UserData({this.uid, this.fname, this.lname, this.dob, this.isTutor, this.interests, this.searchCategories, this.searchLevels, this.favourites, this.lessons});
 
 }

@@ -328,7 +328,6 @@ class _AddTuitionState extends State<AddTuition> {
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 10)),
                               items: [
-                                'Any',
                                 'O\' Level',
                                 'Intermediate Level',
                                 'A\' Level'

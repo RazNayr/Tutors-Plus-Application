@@ -176,8 +176,8 @@ class _HomeState extends State<Home> {
 
   Widget _loadNewTuition(UserData userData, List<Tuition> tuitionList) {
     List<String> userInterests = userData.interests ?? new List();
-    List<String> userLevelHistory = userData.searchHistory['user_level_history'].reversed.toList() ?? new List();
-    List<String> userCategoryHistory = userData.searchHistory['user_category_history'] ?? new List();
+    List<String> userLevelHistory = userData.searchLevels.reversed.toList() ?? new List();
+    List<String> userCategoryHistory = userData.searchCategories ?? new List();
     List<Tuition> unorderedTuitionList = new List();
     List<Tuition> orderedTuitionToShow = new List();
 

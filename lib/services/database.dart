@@ -17,10 +17,6 @@ class DatabaseService {
   //Initialise primary user data when registered
   Future<void> initialiseUserData(Map<String, dynamic> userData) async {
 
-    Map<String,List<String>> userSearchHistory = Map();
-    userSearchHistory['user_category_history'] = List();
-    userSearchHistory['user_level_history'] = List();
-
     return await userCollection.document(uid).setData({
       'user_fname': userData['fname'] as String,
       'user_lname': userData['lname'] as String,
@@ -28,7 +24,8 @@ class DatabaseService {
       'user_gender': userData['gender'] as String,
       'user_isTutor': false,
       'user_interests': new List<String>(),
-      'user_search_history': userSearchHistory,
+      'user_search_categories': new List<String>(),
+      'user_search_levels': new List<String>(),
       'user_favourites': new List<Map>(),
       'user_lessons': new List<Map>(),
     });
@@ -44,18 +41,18 @@ class DatabaseService {
 
   Future<void> addUserSearch({String searchCategory, String searchLevel}) async {
 
-    Map<String,List<String>> _modifiedUserSearchHistory = Map();
     List<String> _userCategorySearchList = List();
     List<String> _userLevelSearchList = List();
     final DocumentReference userDoc = userCollection.document(uid);
     final searchLimit = 5;
 
-    _modifiedUserSearchHistory = await userDoc.get().then((onValue){
-      return onValue['user_search_history'].cast<String,List<String>>();
+    _userCategorySearchList = await userDoc.get().then((onValue){
+      return onValue['user_search_categories'].cast<String>();
     });
 
-    _userCategorySearchList = _modifiedUserSearchHistory['user_category_history'].cast<String>();
-    _userLevelSearchList = _modifiedUserSearchHistory['user_level_history'].cast<String>();
+    _userLevelSearchList = await userDoc.get().then((onValue){
+      return onValue['user_search_levels'].cast<String>();
+    });
 
     if(searchCategory != null){
       if(!_userCategorySearchList.contains(searchCategory)){
@@ -85,11 +82,9 @@ class DatabaseService {
       }
     }
 
-    _modifiedUserSearchHistory['user_category_history'] = _userCategorySearchList;
-    _modifiedUserSearchHistory['user_level_history'] = _userLevelSearchList;
-
     return await userDoc.updateData({
-      'user_search_history': _modifiedUserSearchHistory,
+      'user_search_categories': _userCategorySearchList,
+      'user_search_levels': _userLevelSearchList,
     });
   }
 
@@ -456,6 +451,8 @@ class DatabaseService {
       interests: snapshot.data['user_interests'].cast<String>(),
       favourites: snapshot.data['user_favourites'].cast<Map<dynamic, dynamic>>(),
       lessons: snapshot.data['user_lessons'].cast<Map<dynamic, dynamic>>(),
+      searchCategories: snapshot.data['user_search_categories'].cast<String>(),
+      searchLevels: snapshot.data['user_search_levels'].cast<String>(),
     );
   }
 

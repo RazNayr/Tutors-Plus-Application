@@ -69,7 +69,7 @@ class DatabaseService {
     }
 
     if(searchLevel != null){
-      if(!_userLevelSearchList.contains(searchCategory)){
+      if(!_userLevelSearchList.contains(searchLevel)){
         _userLevelSearchList.add(searchLevel);
 
         if(_userLevelSearchList.length > searchLimit){

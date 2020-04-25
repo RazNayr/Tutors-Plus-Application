@@ -606,8 +606,8 @@ class _SearchState extends State<Search> {
     if(_filterOnTuitions['category'] == 'Any') _filterOnTuitions['category'] = null;
     if(_filterOnTuitions['locality'] == 'Any') _filterOnTuitions['locality'] = null;
     
-    if(_filterOnTuitions['category'] != null){
-      DatabaseService(uid: widget.userData.uid).addUserSearch(_filterOnTuitions['category']);
+    if(_filterOnTuitions['category'] != null || _filterOnTuitions['level'] != null){
+      DatabaseService(uid: widget.userData.uid).addUserSearch(searchCategory: _filterOnTuitions['category'], searchLevel: _filterOnTuitions['level']);
     }
 
     _radiusButtonVisibilityChange(_filter['radius']);

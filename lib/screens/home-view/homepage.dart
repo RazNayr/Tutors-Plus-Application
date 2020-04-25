@@ -176,21 +176,32 @@ class _HomeState extends State<Home> {
 
   Widget _loadNewTuition(UserData userData, List<Tuition> tuitionList) {
     List<String> userInterests = userData.interests ?? new List();
-    List<String> userSearchHistory = userData.searchHistory ?? new List();
-    List<Tuition> customTuitionToShow = new List();
+    List<String> userLevelHistory = userData.searchHistory['user_level_history'].reversed.toList() ?? new List();
+    List<String> userCategoryHistory = userData.searchHistory['user_category_history'] ?? new List();
+    List<Tuition> unorderedTuitionList = new List();
+    List<Tuition> orderedTuitionToShow = new List();
 
     tuitionList.forEach((tuition){
-      if(userInterests.contains(tuition.category) || userSearchHistory.contains(tuition.category)){
-        customTuitionToShow.add(tuition);
+      if(userInterests.contains(tuition.category) || userCategoryHistory.contains(tuition.category)){
+        unorderedTuitionList.add(tuition);
       }
     });
 
-    if(customTuitionToShow.length > 0){
+    //Sort possible tuitions by recent level search
+    userLevelHistory.forEach((searchedLevel){
+      unorderedTuitionList.forEach((tuition){
+        if(tuition.level == searchedLevel){
+          orderedTuitionToShow.add(tuition);
+        }
+      });
+    });
+
+    if(orderedTuitionToShow.length > 0){
       return ListView.builder(
         padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-        itemCount: customTuitionToShow.length,
+        itemCount: orderedTuitionToShow.length,
         itemBuilder: (context, index) {
-          Tuition tuition = customTuitionToShow[index];
+          Tuition tuition = orderedTuitionToShow[index];
           return TuitionTile(tuition: tuition, index: index);
         }
       );

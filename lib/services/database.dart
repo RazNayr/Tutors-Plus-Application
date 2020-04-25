@@ -16,6 +16,11 @@ class DatabaseService {
 
   //Initialise primary user data when registered
   Future<void> initialiseUserData(Map<String, dynamic> userData) async {
+
+    Map<String,List<String>> userSearchHistory = Map();
+    userSearchHistory['user_category_history'] = List();
+    userSearchHistory['user_level_history'] = List();
+
     return await userCollection.document(uid).setData({
       'user_fname': userData['fname'] as String,
       'user_lname': userData['lname'] as String,
@@ -23,7 +28,7 @@ class DatabaseService {
       'user_gender': userData['gender'] as String,
       'user_isTutor': false,
       'user_interests': new List<String>(),
-      'user_search_history': new List<String>(),
+      'user_search_history': userSearchHistory,
       'user_favourites': new List<Map>(),
       'user_lessons': new List<Map>(),
     });
@@ -37,29 +42,55 @@ class DatabaseService {
     });
   }
 
-  Future<void> addUserSearch(String searchCategory) async {
+  Future<void> addUserSearch({String searchCategory, String searchLevel}) async {
 
-    List<String> _modifiedUserSearchHistoryList = List();
+    Map<String,List<String>> _modifiedUserSearchHistory = Map();
+    List<String> _userCategorySearchList = List();
+    List<String> _userLevelSearchList = List();
     final DocumentReference userDoc = userCollection.document(uid);
     final searchLimit = 5;
 
-    _modifiedUserSearchHistoryList = await userDoc.get().then((onValue){
-      return onValue['user_search_history'].cast<String>();
+    _modifiedUserSearchHistory = await userDoc.get().then((onValue){
+      return onValue['user_search_history'].cast<String,List<String>>();
     });
 
-    if(!_modifiedUserSearchHistoryList.contains(searchCategory)){
-      _modifiedUserSearchHistoryList.add(searchCategory);
+    _userCategorySearchList = _modifiedUserSearchHistory['user_category_history'].cast<String>();
+    _userLevelSearchList = _modifiedUserSearchHistory['user_level_history'].cast<String>();
 
-      if(_modifiedUserSearchHistoryList.length > searchLimit){
-        _modifiedUserSearchHistoryList.removeAt(0);
+    if(searchCategory != null){
+      if(!_userCategorySearchList.contains(searchCategory)){
+        _userCategorySearchList.add(searchCategory);
+
+        if(_userCategorySearchList.length > searchLimit){
+          _userCategorySearchList.removeAt(0);
+        }
+      }else{
+        //Update position of searchedCategory to show it as a recent search
+        _userCategorySearchList.remove(searchCategory);
+        _userCategorySearchList.add(searchCategory);
       }
-
-      return await userDoc.updateData({
-        'user_search_history': _modifiedUserSearchHistoryList,
-      });
-    }else{
-      return null;
     }
+
+    if(searchLevel != null){
+      if(!_userLevelSearchList.contains(searchCategory)){
+        _userLevelSearchList.add(searchLevel);
+
+        if(_userLevelSearchList.length > searchLimit){
+          _userLevelSearchList.removeAt(0);
+        }
+      }else{
+        //Update position of searchedCategory to show it as a recent search
+        _userLevelSearchList.remove(searchLevel);
+        _userLevelSearchList.add(searchLevel);
+      }
+    }
+
+    _modifiedUserSearchHistory['user_category_history'] = _userCategorySearchList;
+    _modifiedUserSearchHistory['user_level_history'] = _userLevelSearchList;
+
+    return await userDoc.updateData({
+      'user_search_history': _modifiedUserSearchHistory,
+    });
   }
 
   Future<void> removeUserFavourites(List favouritesToRemove) async {

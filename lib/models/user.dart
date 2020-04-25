@@ -15,7 +15,7 @@ class UserData {
   final Timestamp dob;
   final bool isTutor;
   final List<String> interests;
-  final List<String> searchHistory;
+  final Map<String,List<String>> searchHistory;
   final List<Map> favourites;
   final List<Map> lessons;
 

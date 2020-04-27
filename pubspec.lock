@@ -237,13 +237,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.2+1"
-  flutter_syntax_view:
-    dependency: "direct main"
-    description:
-      name: flutter_syntax_view
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   flutter_tags:
     dependency: "direct main"
     description:
@@ -310,27 +303,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.21"
-  google_sign_in:
-    dependency: "direct main"
-    description:
-      name: google_sign_in
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.4.1"
-  google_sign_in_platform_interface:
-    dependency: transitive
-    description:
-      name: google_sign_in_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
-  google_sign_in_web:
-    dependency: transitive
-    description:
-      name: google_sign_in_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.8.4"
   http:
     dependency: transitive
     description:

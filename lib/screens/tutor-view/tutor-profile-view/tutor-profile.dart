@@ -226,7 +226,7 @@ class _TutorProfileState extends State<TutorProfile> {
                   leading: Icon(Icons.library_add),
                   trailing: _toggleNewTuitionIcon(tutorData),
                   onTap: () {
-                    if(tutorData.tuition.length >= 3){
+                    if(tutorData.tuition.length >= 1){
                       if(tutorData.isPremium){
                         Navigator.push(context, SlideToRoute(page: AddTuition(tutorData: tutorData),type: "right"));
                       }else{

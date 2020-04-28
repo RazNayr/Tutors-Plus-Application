@@ -151,7 +151,7 @@ class _TutorProfileState extends State<TutorProfile> {
 
     final tutorData = tutordata;
 
-    if(tutorData.tuition.length >= 3){
+    if(tutorData.tuition.length >= 1){
       if(tutorData.isPremium){
         return null;
       }else{
